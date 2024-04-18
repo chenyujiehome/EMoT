@@ -12,166 +12,118 @@ from PIL import Image
 import imageio
 from concurrent.futures import ProcessPoolExecutor, as_completed
 from multiprocessing import cpu_count
+import torch
+import os
+import shutil
+import tempfile
+import time
+import matplotlib.pyplot as plt
+from monai.apps import DecathlonDataset
+from monai.config import print_config
+from monai.data import DataLoader, decollate_batch,DistributedSampler, pad_list_data_collate,list_data_collate
+from torch.utils.data import random_split
+from monai.handlers.utils import from_engine
+from monai.losses import DiceLoss
+from monai.inferers import sliding_window_inference
+from monai.metrics import DiceMetric
+from monai.networks.nets import SegResNet
+from monai.transforms import (
+    Activations,
+    Activationsd,
+    AsDiscrete,
+    AsDiscreted,
+    Compose,
+    Invertd,
+    LoadImaged,
+    MapTransform,
+    NormalizeIntensityd,
+    Orientationd,
+    RandFlipd,
+    RandScaleIntensityd,
+    RandShiftIntensityd,
+    RandSpatialCropd,
+    Spacingd,
+    EnsureTyped,
+    EnsureChannelFirstd,
+    SpatialPadd,
+)
+from monai.utils import set_determinism
 
+import torch
+
+class NameData(MapTransform):
+
+
+    def __call__(self, data):
+        d = dict(data)
+        for key in self.keys:
+            d['name'] = os.path.splitext(os.path.splitext(os.path.basename(d[key]))[0])[0]
+        return d
+class ConvertToMultiChannelBasedOnBratsClassesd(MapTransform):
+    """
+    Convert labels to multi channels based on brats classes:
+    label 1 is the peritumoral edema
+    label 2 is the GD-enhancing tumor
+    label 3 is the necrotic and non-enhancing tumor core
+    The possible classes are TC (Tumor core), WT (Whole tumor)
+    and ET (Enhancing tumor).
+
+    """
+
+    def __call__(self, data):
+        d = dict(data)
+        for key in self.keys:
+            d[key] = d[key].unsqueeze(0)
+        return d
 low_range = -150
 high_range = 250
-
-class_of_interest = ['aorta',
-                     'gall_bladder',
-                     'kidney_left',
-                     'kidney_right',
-                     'liver',
-                     'pancreas',
-                     'postcava',
-                     'spleen',
-                     'stomach',
+# 除以max 乘以255
+class_of_interest = ['PZ',
+                     'TZ',
                     ]
 
 CLASS_IND = {
-    'spleen': 1,
-    'kidney_right': 2,
-    'kidney_left': 3,
-    'gall_bladder': 4,
-    'esophagus': 5,
-    'liver': 6,
-    'stomach': 7,
-    'aorta': 8,
-    'postcava': 9,
-    'portal and splenic vein': 10,
-    'pancreas': 11,
-    'adrenal gland R': 12,
-    'adrenal gland L': 13,
-    'duodenum': 14,
-    'hepatic vessel': 15,
-    'lung R': 16,
-    'lung L': 17,
-    'colon': 18,
-    'intestine': 19,
-    'rectum': 20,
-    'bladder': 21,
-    'prostate': 22,
-    'head of femur L': 23,
-    'head of femur R': 24,
-    'celiac trunk': 25,
-    'kidney tumor': 26,
-    'liver tumor': 27,
-    'pancreatic tumor': 28,
-    'hepatic vessel tumor': 29,
-    'lung tumor': 30,
-    'colon tumor': 31,
-    'kidney cyst': 32,
+    'PZ': 1,
+    'TZ': 2,
 }
 
 def add_colorful_mask(image, mask, class_index):
     
-    image[mask == class_index['spleen'], 0] = 255   # spleen (255,0,0) 
+    image[mask == class_index['PZ'], 0] = 255   # spleen (255,0,0) 
+    image[mask == class_index['TZ'], 1] = 255   # spleen (255,0,0) 
     
-    image[mask == class_index['kidney_right'], 1] = 255   # kidney_right (0,255,0)
-    image[mask == class_index['kidney_left'], 1] = 255   # kidney_left (0,255,0)
-    image[mask == class_index['kidney tumor'], 1] = 255  # kidney tumor (0,255,0)
-    image[mask == class_index['kidney cyst'], 1] = 255  # kidney cyst (0,255,0)
     
-    image[mask == class_index['gall_bladder'], 0] = 255   # gall_bladder (255,255,0)
-    image[mask == class_index['gall_bladder'], 1] = 255   # 
-    
-    # image[mask == class_index['esophagus'], 1] = 255   # esophagus (0,255,255)
-    # image[mask == class_index['esophagus'], 2] = 255   # 
-    image[mask == class_index['liver'], 0] = 255   # liver (255,0,255)
-    image[mask == class_index['hepatic vessel'], 0] = 255  # hepatic vessel (255,0,255)
-    image[mask == class_index['liver tumor'], 0] = 255  # liver tumors (255,0,255)
-    image[mask == class_index['hepatic vessel tumor'], 0] = 255  # hepatic vessel tumors (255,0,255)
-    image[mask == class_index['liver'], 2] = 255   # liver (255,0,255)
-    image[mask == class_index['hepatic vessel'], 2] = 255  # hepatic vessel (255,0,255)
-    image[mask == class_index['liver tumor'], 2] = 255  # liver tumors (255,0,255)
-    image[mask == class_index['hepatic vessel tumor'], 2] = 255  # hepatic vessel tumors (255,0,255)
-    
-    image[mask == class_index['stomach'], 0] = 255
-    image[mask == class_index['stomach'], 1] = 239   # stomach (255,239,255)
-    image[mask == class_index['stomach'], 2] = 213   # 
-    
-    image[mask == class_index['aorta'], 1] = 255
-    image[mask == class_index['aorta'], 2] = 255   # aorta (0,255,255)
-    
-    image[mask == class_index['postcava'], 0] = 205   # postcava (205,133,63)
-    image[mask == class_index['postcava'], 1] = 133   # 
-    image[mask == class_index['postcava'], 2] = 63 # + image[mask == class_index['postcava'], 2] * 0.2   # 
-    
-    # image[mask == class_index['portal and splenic vein'], 0] = 0 + image[mask == class_index['portal and splenic vein'], 0] * 0.5 # portal and splenic vein (0,0,255)
-    # image[mask == class_index['portal and splenic vein'], 1] = 0 + image[mask == class_index['portal and splenic vein'], 1] * 0.5 # 
-    # image[mask == class_index['portal and splenic vein'], 2] = 255  # 
-    
-    image[mask == class_index['pancreas'], 0] = 102  # pancreas (102,205,170)
-    image[mask == class_index['pancreas'], 1] = 205
-    image[mask == class_index['pancreas'], 2] = 170  #  
-    image[mask == class_index['pancreatic tumor'], 0] = 102  # pancreatic tumors (102,205,170)
-    image[mask == class_index['pancreatic tumor'], 1] = 205
-    image[mask == class_index['pancreatic tumor'], 2] = 170
+    # image[mask == class_index['kidney_right'], 1] = 255   # kidney_right (0,255,0)
 
-    # image[mask == class_index['adrenal gland R'], 0] = 0 + image[mask == class_index['adrenal gland R'], 0] * 0.5 # adrenal gland R (0,255,0)
-    # image[mask == class_index['adrenal gland R'], 1] = 255 # 
-    # image[mask == class_index['adrenal gland R'], 2] = 0 + image[mask == class_index['adrenal gland R'], 2] * 0.5  # 
-    # image[mask == class_index['adrenal gland L'], 0] = 0 + image[mask == class_index['adrenal gland L'], 0] * 0.5 # adrenal gland L (0,255,0)
-    # image[mask == class_index['adrenal gland L'], 1] = 255 # 
-    # image[mask == class_index['adrenal gland L'], 2] = 0 + image[mask == class_index['adrenal gland L'], 2] * 0.5 # 
-    
-    # image[mask == class_index['duodenum'], 0] = 255 # duodenum (255,80,80)
-    # image[mask == class_index['duodenum'], 1] = 80 + image[mask == class_index['duodenum'], 1] * 0.6 # 
-    # image[mask == class_index['duodenum'], 2] = 80 + image[mask == class_index['duodenum'], 2] * 0.6 # 
-    
-    # image[mask == class_index['lung R'], 0] = 200 + image[mask == class_index['lung R'], 0] * 0.2  # lung R (200,128,0)
-    # image[mask == class_index['lung R'], 2] = 128 + image[mask == class_index['lung R'], 2] * 0.5  #
-    # image[mask == class_index['lung L'], 0] = 200 + image[mask == class_index['lung L'], 0] * 0.2  # lung L (200,128,0)
-    # image[mask == class_index['lung L'], 2] = 128 + image[mask == class_index['lung L'], 2] * 0.5  #
-    # image[mask == class_index['lung tumor'], 0] = 200 + image[mask == class_index['lung tumor'], 0] * 0.2  # lung tumor (200,128,0)
-    # image[mask == class_index['lung tumor'], 2] = 128 + image[mask == class_index['lung tumor'], 2] * 0.5  #
-    
-    # image[mask == class_index['colon'], 0] = 170  # colon (170,0,255)
-    # image[mask == class_index['colon'], 1] = 0 + image[mask == class_index['colon'], 1] * 0.7    # 
-    # image[mask == class_index['colon'], 2] = 255  # 
-    # image[mask == class_index['colon tumor'], 0] = 170  # colon tumors (170,0,255)
-    # image[mask == class_index['colon tumor'], 1] = 0 + image[mask == class_index['colon tumor'], 1] * 0.7    # 
-    # image[mask == class_index['colon tumor'], 2] = 255  #
-    
-    # image[mask == class_index['prostate'], 0] = 0    # prostate (0,128,128)
-    # image[mask == class_index['prostate'], 1] = 128  # 
-    # image[mask == class_index['prostate'], 2] = 128 + image[mask == class_index['prostate'], 2] * 0.5  # 
-    
-    # image[mask == class_index['celiac trunk'], 0] = 255    # celiac trunk (255,0,0)
-    # image[mask == class_index['celiac trunk'], 1] = 0 + image[mask == class_index['celiac trunk'], 1] * 0.5  # 
-    # image[mask == class_index['celiac trunk'], 2] = 0  # 
+    # image[mask == class_index['liver'], 2] = 255   # liver (255,0,255)
+  
     
     return image
 
 def load_individual_maps(segmentation_dir):
     
-    mask_path = os.path.join(segmentation_dir, 'liver.nii.gz')
-    mask = nib.load(mask_path).get_fdata().astype(np.uint8)
-    
+    mask_path = args.mask_path
+    c_mask = torch.load(mask_path)[segmentation_dir[:11]].cpu().clone().numpy()
+    mask=np.zeros(c_mask.shape[1:],dtype=np.uint8)
     for c in class_of_interest:
-        mask_path = os.path.join(segmentation_dir, c+'.nii.gz')
-        c_mask = nib.load(mask_path).get_fdata().astype(np.uint8)
-        mask[c_mask == 1] = CLASS_IND[c]
+        mask[c_mask[CLASS_IND[c],:,:,:] == 1] = CLASS_IND[c]
     
     return mask
     
-def full_make_png(case_name, args):
+def full_make_png(case_name, args,data):
     
     for plane in ['axial', 'coronal', 'sagittal']:
         if not os.path.exists(os.path.join(args.png_save_path, plane, case_name)):
             os.makedirs(os.path.join(args.png_save_path, plane, case_name))
 
-    image_name = f'ct.nii.gz'
 
-    image_path = os.path.join(args.abdomen_atlas, case_name, image_name)
+    image_path = os.path.join(args.abdomen_atlas, case_name)
 
     # single case
-    image = nib.load(image_path).get_fdata().astype(np.int16)
-    mask = load_individual_maps(os.path.join(args.abdomen_atlas, case_name, 'segmentations'))
-    
-    # change orientation
-    ornt = nib.orientations.axcodes2ornt(('F', 'L', 'U'), (('L','R'),('B','F'),('D','U')))
-    image = nib.orientations.apply_orientation(image, ornt)
-    mask = nib.orientations.apply_orientation(mask, ornt)
+    image =data[case_name[:11]][args.image_channel,:,:,:]
+
+    mask = load_individual_maps( case_name)
+
     
     image[image > high_range] = high_range
     image[image < low_range] = low_range
@@ -189,7 +141,7 @@ def full_make_png(case_name, args):
     for z in range(mask.shape[0]):
         Image.fromarray(image_mask[z,:,:,:]).save(os.path.join(args.png_save_path, 'coronal', case_name, str(z)+'.png'))
         
-def make_avi(case_name, plane, args):
+def make_avi(case_name, plane, args,data):
 
     if not os.path.exists(os.path.join(args.video_save_path, plane)):
         os.makedirs(os.path.join(args.video_save_path, plane))
@@ -224,31 +176,54 @@ def make_avi(case_name, plane, args):
     imageio.mimsave(gif_name, imgs, duration=args.FPS*0.4)
     
 def event(folder, args):
-    if folder == '.ipynb_checkpoints':
-        return
-    full_make_png(folder, args)
+
+    test_transform = Compose(
+        [
+            NameData(keys=["image"]),
+            LoadImaged(keys=["image"]),
+            EnsureChannelFirstd(keys="image"),
+            EnsureTyped(keys=["image"]),
+            # ConvertToMultiChannelBasedOnBratsClassesd(keys="label"),
+            Orientationd(keys=["image"], axcodes="RAS"),
+            Spacingd(
+                keys=["image"],
+                pixdim=(1.0, 1.0, 1.0),
+                mode=("bilinear"),
+            ),
+            # # SpatialPadd(keys=["image", "label"], spatial_size=[192, 192, 64]),
+            # # RandSpatialCropd(keys=["image", "label"], roi_size=[192, 192, 64], random_size=False),
+            # NormalizeIntensityd(keys="image", nonzero=True, channel_wise=True),
+        ]
+    )
+    test_dataset = DecathlonDataset(
+            root_dir="/home/fanlinghuang/TAD-chenyujie/",
+            task="Task05_Prostate",
+            section="test",
+            transform=test_transform,
+            download=False,
+            cache_rate=0.0,
+            num_workers=4,
+        )
+    test_dict={}
+    for i in range(len(test_dataset)):
+        test_dict[test_dataset[i]['name']]=test_dataset[i]['image']
+    test_dataset=test_dict
+    full_make_png(folder, args,test_dataset)
     for plane in ['axial', 'coronal', 'sagittal']:
-        make_avi(folder, plane, args)
+        make_avi(folder, plane, args,test_dataset)
         
 def main(args):
-     folder_names = [name for name in os.listdir(args.abdomen_atlas) if os.path.isdir(os.path.join(args.abdomen_atlas, name))]
-     print('>> {} CPU cores are secured.'.format(cpu_count()))
-    
-     with ProcessPoolExecutor(max_workers=cpu_count()) as executor:
-        futures = {executor.submit(event, folder, args): folder
-                   for folder in folder_names}
+    folder_names = [name for name in os.listdir(args.abdomen_atlas)]
+    print('>> {} CPU cores are secured.'.format(cpu_count()))
+    for folder in folder_names:
+        event(folder, args)
+
         
-        for future in tqdm(as_completed(futures), total=len(futures)):
-            folder = futures[future]
-            try:
-                future.result()
-            except Exception as e:
-                print(f"Error processing {folder}: {e}")
                 
 if __name__ == "__main__":
     
     parser = argparse.ArgumentParser()
-    parser.add_argument('--abdomen_atlas', dest='abdomen_atlas', type=str, default='/Volumes/Atlas/AbdomenAtlas_8K_internal',
+    parser.add_argument('--abdomen_atlas', dest='abdomen_atlas', type=str, default='/home/fanlinghuang/TAD-chenyujie/Task05_Prostate/imagesTs',
                         help='the directory of the AbdomenAtlas dataset',
                        )
     parser.add_argument("--png_save_path", dest='png_save_path', type=str, default='./materials',
@@ -262,6 +237,10 @@ if __name__ == "__main__":
                        )
     parser.add_argument("--FPS", dest='FPS', type=float, default=20,
                         help='the FPS value for videos',
+                       )
+    parser.add_argument("--image_channel", type=int, default=0,
+                       )
+    parser.add_argument("--mask_path",  type=str, default="/home/fanlinghuang/TAD-chenyujie/dataset/pretrain4_trained_MSD_plot/sup_swin/target_applications/totalsegmentator/save_tensor_sup_swinunetr.pt",
                        )
     args = parser.parse_args()
 

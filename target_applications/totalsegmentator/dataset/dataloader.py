@@ -13,6 +13,7 @@ from monai.inferers import sliding_window_inference
 from monai.metrics import DiceMetric
 from monai.networks.nets import SegResNet
 from monai.transforms import (
+    ScaleIntensity,
     Activations,
     Activationsd,
     AsDiscrete,
@@ -88,10 +89,10 @@ def get_loader(args):
         ),
         SpatialPadd(keys=["image", "label"], spatial_size=(args.roi_x, args.roi_y, args.roi_z)),
         RandSpatialCropd(keys=["image", "label"], roi_size=(args.roi_x, args.roi_y, args.roi_z), random_size=False),
+        ScaleIntensity(minv=0.0, maxv=1.0,channel_wise=True),
         RandFlipd(keys=["image", "label"], prob=0.5, spatial_axis=0),
         RandFlipd(keys=["image", "label"], prob=0.5, spatial_axis=1),
         RandFlipd(keys=["image", "label"], prob=0.5, spatial_axis=2),
-        NormalizeIntensityd(keys="image", nonzero=True, channel_wise=True),
         RandScaleIntensityd(keys="image", factors=0.1, prob=1.0),
         RandShiftIntensityd(keys="image", offsets=0.1, prob=1.0),
     ]
@@ -111,7 +112,7 @@ def get_loader(args):
         ),
         # SpatialPadd(keys=["image", "label"], spatial_size=[192, 192, 64]),
         # RandSpatialCropd(keys=["image", "label"], roi_size=[192, 192, 64], random_size=False),
-        NormalizeIntensityd(keys="image", nonzero=True, channel_wise=True),
+        ScaleIntensity(minv=0.0, maxv=1.0,channel_wise=True),
     ]
 )
 
