@@ -1,0 +1,12 @@
+# Ignore .pt files
+*.pt
+*.pth
+
+# Ignore out/ directories
+*/out/
+
+# Ignore Python cache
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
