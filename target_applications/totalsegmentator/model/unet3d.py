@@ -112,7 +112,7 @@ class UNet3D(nn.Module):
     def __init__(self, n_class=1, act='relu'):
         super(UNet3D, self).__init__()
 
-        self.down_tr64 = DownTransition(1,0,act)
+        self.down_tr64 = DownTransition(2,0,act)
         self.down_tr128 = DownTransition(64,1,act)
         self.down_tr256 = DownTransition(128,2,act)
         self.down_tr512 = DownTransition(256,3,act)

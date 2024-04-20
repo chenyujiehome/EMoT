@@ -59,28 +59,6 @@ def train(args, train_loader, model, optimizer):
     return loss_ave/len(epoch_iterator)
 
 
-def validation(model, ValLoader, args):
-    model.eval()
-    dice_stat = np.zeros((2, args.num_class))
-    post_label = AsDiscrete(to_onehot=args.num_class)
-    post_pred = AsDiscrete(argmax=True, to_onehot=args.num_class)
-    for index, batch in enumerate(tqdm(ValLoader)):
-        image, val_labels, name = batch["image"].to(args.device), batch["label"].to(args.device), batch["name"]
-        with torch.no_grad():
-            val_outputs = sliding_window_inference(image, (args.roi_x, args.roi_y, args.roi_z), 1, model, overlap=args.overlap, mode='gaussian')
-        val_labels_list = decollate_batch(val_labels)
-        val_labels_convert = [
-            post_label(val_label_tensor) for val_label_tensor in val_labels_list
-        ]
-        val_outputs_list = decollate_batch(val_outputs)
-        val_output_convert = [
-            post_pred(val_pred_tensor) for val_pred_tensor in val_outputs_list
-        ]        
-        dice_metric(y_pred=val_output_convert, y=val_labels_convert)
-    dice_array = dice_metric.aggregate()
-    mean_dice_val = dice_metric.aggregate().mean().item()
-    dice_metric.reset()
-    return mean_dice_val
 
 def process(args):
     rank = 0
@@ -93,112 +71,12 @@ def process(args):
 
     # prepare the 3D model  
     # swin unetr pre-trained by us
-    if args.model_backbone == "selfswin":
-        model = SwinUNETR(img_size=(args.roi_x, args.roi_y, args.roi_z),
-                        in_channels=1,
-                        out_channels=args.num_class,
-                        feature_size=48,
-                        drop_rate=0.0,
-                        attn_drop_rate=0.0,
-                        dropout_path_rate=0.0,
-                        use_checkpoint=False
-                        )
-        store_dict = model.state_dict()
-        model_dict = torch.load(args.pretrain, map_location='cpu')["state_dict"]
-        amount = 0
-        for key in model_dict.keys():
-            new_key = '.'.join(key.split('.')[1:])
-            if 'out' not in new_key:
-                if 'rotation' in new_key:
-                    break
-                else:
-                    store_dict[new_key] = model_dict[key]
-                    amount += 1
-        print(amount, len(model_dict.keys()))
-        model.load_state_dict(store_dict)
-        print('Use Self-supervised Swin Unetr pretrained weights')
 
-    # swin unetr released by monai
-    if args.model_backbone == 'selfswinunetr':
-        model = SwinUNETR(img_size=(args.roi_x, args.roi_y, args.roi_z),
-                        in_channels=1,
-                        out_channels=args.num_class,
-                        feature_size=48,
-                        drop_rate=0.0,
-                        attn_drop_rate=0.0,
-                        dropout_path_rate=0.0,
-                        use_checkpoint=False
-                        )
-        store_dict = model.state_dict()
-        model_dict = torch.load(args.pretrain)["state_dict"]
-        amount = 0
-        for key in model_dict.keys():
-            if 'out' not in key:
-                store_dict[key] = model_dict[key]
-                amount += 1
-        print(amount, len(model_dict.keys()))
-        model.load_state_dict(store_dict)
-        print('Use Self-supervised Swin Unetr pretrained weights by monai')
-
-    # 50,000 pre-trained weights released by monai
-    if args.model_backbone == 'ssl':
-        model = SwinUNETR(img_size=(args.roi_x, args.roi_y, args.roi_z),
-                        in_channels=1,
-                        out_channels=args.num_class,
-                        feature_size=48,
-                        drop_rate=0.0,
-                        attn_drop_rate=0.0,
-                        dropout_path_rate=0.0,
-                        use_checkpoint=False
-                        )
-        ssl_dict = torch.load(args.pretrain)
-        ssl_weights = ssl_dict["model"]
-
-        monai_loadable_state_dict = OrderedDict()
-        model_prior_dict = model.state_dict()
-        model_update_dict = model_prior_dict
-
-        del ssl_weights["encoder.mask_token"]
-        del ssl_weights["encoder.norm.weight"]
-        del ssl_weights["encoder.norm.bias"]
-        del ssl_weights["out.conv.conv.weight"]
-        del ssl_weights["out.conv.conv.bias"]
-
-        for key, value in ssl_weights.items():
-            if key[:8] == "encoder.":
-                if key[8:19] == "patch_embed":
-                    new_key = "swinViT." + key[8:]
-                else:
-                    new_key = "swinViT." + key[8:18] + key[20:]
-                monai_loadable_state_dict[new_key] = value
-            else:
-                monai_loadable_state_dict[key] = value
-
-        model_update_dict.update(monai_loadable_state_dict)
-        model.load_state_dict(model_update_dict, strict=True)
-        model_final_loaded_dict = model.state_dict()
-
-        layer_counter = 0
-        for k, _v in model_final_loaded_dict.items():
-            if k in model_prior_dict:
-                layer_counter = layer_counter + 1
-
-                old_wts = model_prior_dict[k]
-                new_wts = model_final_loaded_dict[k]
-
-                old_wts = old_wts.to("cpu").numpy()
-                new_wts = new_wts.to("cpu").numpy()
-                diff = np.mean(np.abs(old_wts, new_wts))
-                print("Layer {}, the update difference is: {}".format(k, diff))
-                if diff == 0.0:
-                    print("Warning: No difference found for layer {}".format(k))
-        print("Total updated layers {} / {}".format(layer_counter, len(model_prior_dict)))
-        print("50,000 Pretrained Weights Successfully Loaded !")
 
     # SuPreM swinunetr backbone
     if args.model_backbone == 'swinunetr':
         model = SwinUNETR(img_size=(args.roi_x, args.roi_y, args.roi_z),
-                        in_channels=1,
+                        in_channels=2,
                         out_channels=args.num_class,
                         feature_size=48,
                         drop_rate=0.0,
@@ -318,21 +196,6 @@ def process(args):
         if rank == 0:
             writer.add_scalar('train_loss', loss, args.epoch)
             writer.add_scalar('lr', scheduler.get_lr(), args.epoch)
-
-        if (args.epoch % args.store_num == 0):
-            mean_dice = validation(model, val_loader, args)
-            if mean_dice > best_dice:
-                best_dice = mean_dice
-                checkpoint = {
-                    "net": model.state_dict(),
-                    'optimizer':optimizer.state_dict(),
-                    'scheduler': scheduler.state_dict(),
-                    "epoch": args.epoch
-                }
-                if not os.path.isdir('out/' + args.log_name):
-                    os.mkdir('out/' + args.log_name)
-                torch.save(checkpoint, 'out/' + args.log_name + '/best_model.pth')
-                print('The best model saved at epoch:', args.epoch)
         
         checkpoint = {
                 "net": model.state_dict(),
@@ -403,12 +266,14 @@ def main():
     parser.add_argument('--cache_rate', default=0.005, type=float, help='The percentage of cached data in total')
     parser.add_argument('--overlap', default=0.5, type=float, help='overlap for sliding_window_inference')
     parser.add_argument('--dataset_path', default='...', help='dataset path')
-    parser.add_argument('--model_backbone', default='unet', help='model backbone, also avaliable for swinunetr')
+    parser.add_argument('--model_backbone', default=None, help='model backbone, also avaliable for swinunetr')
     parser.add_argument('--percent', default=1081, type=int, help='percent of training data')
     parser.add_argument('--checkpoint', default='sup_swin', help='pretrain checkpoint name') 
-
+    parser.add_argument('--fold_t', default=0, type=int, help='Which dataset is used as the test set in k fold cross validation')
+    parser.add_argument('--fold', default=5, type=int, help='k fold cross validation')
+    parser.add_argument('--seed', default=0, type=int, help='random seed')
     args = parser.parse_args()
-    assert args.checkpoint in ['tang', 'jose', 'univ_swin', 'sup_swin', 'genesis', 'unimiss_tiny', 'unimiss_small', 'med3d', 'dodnet', 'univ_unet', 'sup_unet', 'sup_seg', 'voco']
+    assert args.checkpoint in ['tang', 'jose', 'univ_swin', 'voco','sup_swin', 'genesis', 'unimiss_tiny', 'unimiss_small', 'med3d', 'dodnet', 'univ_unet', 'sup_unet', 'sup_seg',]
     pre_dict={'tang':'self_supervised_nv_swin_unetr_5050.pt',
               "jose":'self_supervised_nv_swin_unetr_50000.pth',
               "univ_swin":'supervised_clip_driven_universal_swin_unetr_2100.pth',
@@ -423,6 +288,24 @@ def main():
              "sup_seg":'supervised_suprem_segresnet_2100.pth',
              "voco":"VoCo_10k.pt",
              }
+    back_dict= {
+    'tang': 'swinunetr',
+    'jose': 'swinunetr',
+    'univ_swin': 'swinunetr',
+    'sup_swin': 'swinunetr',
+    'voco': 'swinunetr',
+    'genesis': 'unet',
+    'unimiss_tiny': 'unet',
+    'unimiss_small': 'unet',
+    'med3d': 'unet',
+    'dodnet': 'unet',
+    'univ_unet': 'unet',
+    'sup_unet': 'unet',
+    'sup_seg': 'segresnet'
+    }
+
+    if args.backbone is  None:
+        args.backbone = back_dict[args.checkpoint]
     if args.pretrain is  None:
         args.pretrain = "pretrained_weights/"+pre_dict[args.checkpoint]
     process(args=args)

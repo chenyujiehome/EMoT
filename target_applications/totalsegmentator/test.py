@@ -55,7 +55,7 @@ def validation(model, ValLoader, args):
             # Iterate over each selected class
             for class_name in selected_class_map.values():
                 # Construct the file path based on the class name and name
-                file_path_pattern = os.path.join(args.dataset_path, name, "segmentations", f"*{class_name}*.nii.gz")
+                file_path_pattern = os.path.join(args.dataset_path, "imagesTs", "prostate_03.nii.gz")
                 # Use glob to find files matching the constructed file path
                 for gt_path in glob.glob(file_path_pattern):
                     # Load the NIfTI file and extract the header information
@@ -154,7 +154,7 @@ def process(args):
 
     if args.model_backbone == 'swinunetr':
         model = SwinUNETR(img_size=(args.roi_x, args.roi_y, args.roi_z),
-                    in_channels=1,
+                    in_channels=2,
                     out_channels=args.num_class,
                     feature_size=48,
                     drop_rate=0.0,
@@ -175,28 +175,6 @@ def process(args):
         print(amount, len(store_dict.keys()))
         print(f'Load Swin UNETR transfer learning weights')
 
-    if args.model_backbone == 'selfswin':
-        model = SwinUNETR(img_size=(args.roi_x, args.roi_y, args.roi_z),
-                    in_channels=1,
-                    out_channels=args.num_class,
-                    feature_size=48,
-                    drop_rate=0.0,
-                    attn_drop_rate=0.0,
-                    dropout_path_rate=0.0,
-                    use_checkpoint=False
-                    )
-        store_dict = model.state_dict()
-        model_dict = torch.load(args.pretrain)['net']
-        store_dict = model.state_dict()
-        amount = 0
-        for key in model_dict.keys():
-            new_key = '.'.join(key.split('.')[1:])
-            if new_key in store_dict.keys():
-                store_dict[new_key] = model_dict[key]   
-                amount += 1
-        model.load_state_dict(store_dict)
-        print(amount, len(store_dict.keys()))
-        print(f'Load Self Swin transfer learning weights')
 
     if args.model_backbone == 'unet':
         model = UNet3D(n_class=args.num_class)
@@ -307,8 +285,47 @@ def main():
     parser.add_argument('--model_backbone', default='unet', help='model backbone, also avaliable for swinunetr')
     parser.add_argument('--train_type', default='scratch', help='either train from scratch or transfer')
     parser.add_argument('--percent', default=1081, type=int, help='pre-training using numbers of images')
+    parser.add_argument('--fold_t', default=0, type=int, help='Which dataset is used as the test set in k fold cross validation')
+    parser.add_argument('--fold', default=5, type=int, help='k fold cross validation')
+    parser.add_argument('--seed', default=0, type=int, help='random seed')
     args = parser.parse_args()
-    
+    assert args.checkpoint in ['tang', 'jose', 'univ_swin', 'voco','sup_swin', 'genesis', 'unimiss_tiny', 'unimiss_small', 'med3d', 'dodnet', 'univ_unet', 'sup_unet', 'sup_seg',]
+    pre_dict={'tang':'self_supervised_nv_swin_unetr_5050.pt',
+              "jose":'self_supervised_nv_swin_unetr_50000.pth',
+              "univ_swin":'supervised_clip_driven_universal_swin_unetr_2100.pth',
+             'sup_swin':'supervised_suprem_swinunetr_2100.pth',
+             'genesis':'self_supervised_models_genesis_unet_620.pt', 
+             "unimiss_tiny":'self_supervised_unimiss_nnunet_tiny_5022.pth',
+             "unimiss_small":'self_supervised_unimiss_nnunet_small_5022.pth',
+             "med3d":'supervised_med3D_residual_unet_1623.pth',
+             "dodnet":'supervised_dodnet_unet_920.pth',
+             "univ_unet":'supervised_clip_driven_universal_unet_2100.pth',
+             "sup_unet":'supervised_suprem_unet_2100.pth',
+             "sup_seg":'supervised_suprem_segresnet_2100.pth',
+             "voco":"VoCo_10k.pt",
+             }
+    back_dict= {
+    'tang': 'swinunetr',
+    'jose': 'swinunetr',
+    'univ_swin': 'swinunetr',
+    'sup_swin': 'swinunetr',
+    'voco': 'swinunetr',
+    'genesis': 'unet',
+    'unimiss_tiny': 'unet',
+    'unimiss_small': 'unet',
+    'med3d': 'unet',
+    'dodnet': 'unet',
+    'univ_unet': 'unet',
+    'sup_unet': 'unet',
+    'sup_seg': 'segresnet'
+    }
+
+    if args.backbone is  None:
+        args.backbone = back_dict[args.checkpoint]
+    if args.pretrain is  None:
+        args.pretrain = "pretrained_weights/"+pre_dict[args.checkpoint]
+    process(args=args)
+
     process(args=args)
 
 if __name__ == "__main__":
