@@ -234,7 +234,7 @@ def process(args):
         directory = 'out/' + args.log_name
         if not os.path.isdir(directory):
             os.mkdir(directory)
-        torch.save(checkpoint, directory + '/model.pth')
+        torch.save(checkpoint, directory + f'/model_fold_{str(args.fold_t)}.pth')
 
         args.epoch += 1
 

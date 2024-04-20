@@ -215,7 +215,7 @@ def process(args):
 
     torch.backends.cudnn.benchmark = True
 
-    train_loader, train_sampler, val_loader, test_loader = get_loader(args)
+    train_loader, train_sampler, test_loader,val_loader  = get_loader(args)
 
     if rank == 0:
         writer = SummaryWriter(log_dir='out/' + args.log_name)
@@ -322,11 +322,8 @@ def main():
 
     if args.model_backbone is  None:
         args.model_backbone = back_dict[args.checkpoint]
-    if args.pretrain is  None:
-        args.pretrain = "pretrained_weights/"+pre_dict[args.checkpoint]
     process(args=args)
 
-    process(args=args)
 
 if __name__ == "__main__":
     main()

@@ -38,12 +38,12 @@ import numpy as np
 from sklearn.model_selection import KFold
 import torch
 from copy import deepcopy
-class_map_part_vertebrae = {
-    1: "vertebrae_L5",
-    2: "vertebrae_L4",
+class_map_part_prostate = {
+    1: "PZ",
+    2: "TZ",
     }
 totalseg_taskmap_set = {
-    'vertebrae': class_map_part_vertebrae,
+    'prostate': class_map_part_prostate,
 }
 class ConvertToMultiChannelBasedOnBratsClassesd(MapTransform):
     """
