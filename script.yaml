@@ -1,0 +1,27 @@
+
+environment:
+  image: pytorch/pytorch:2.1.1-cuda12.1-cudnn8-devel
+  setup:
+    - apt-get update 
+    - DEBIAN_FRONTEND=noninteractive apt-get install ffmpeg libsm6 libxext6  -y 
+    - pip install monai[all]==0.9.0
+    - pip install connected-components-3d h5py==3.6.0   tqdm fastremap simpleitk ipdb matplotlib tensorboardX ml-collections einops timm elasticdeform numpy nibabel scipy pandas glob2 pytorch-lightning==1.6.4 opencv-python
+    - pip install h5py
+    - pip install monai -U
+    - pip list
+    - python3 --version
+code:
+  local_dir: $CONFIG_DIR/src
+  
+
+
+jobs:
+  command:
+  - mv ./azcopy /usr/bin/azcopy
+  - chmod 777 /usr/bin/azcopy
+  - nvidia-smi
+  - mkdir -p /mnt/amlt_code/prostate_data
+  - cd SuPreM/
+  - chmod 777 ./run.sh
+  - ./run.sh
+
