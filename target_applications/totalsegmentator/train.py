@@ -117,16 +117,20 @@ def process(args):
         model_dict = torch.load(args.pretrain)['net'] if args.checkpoint in ('sup_swin') else torch.load(args.pretrain)['state_dict']
         amount = 0
         for key in model_dict.keys():
-            if key in store_dict.keys():
-                store_dict[key] = model_dict[key]
-                amount += 1
-            else:
-                new_key = '.'.join(key.split('.')[1:])
-                if 'backbone' in new_key:
-                    n_key = '.'.join(new_key.split('.')[1:])
-                    if n_key in store_dict.keys():
-                        store_dict[n_key] = model_dict[key]
-                        amount += 1
+            if 'out' not in key:
+                if key in store_dict.keys():
+                    store_dict[key] = model_dict[key]
+                    amount += 1
+                else:
+                    new_key = '.'.join(key.split('.')[1:])
+                    if 'backbone' in new_key:
+                        n_key = '.'.join(new_key.split('.')[1:])
+                        if n_key in store_dict.keys():
+                            store_dict[n_key] = model_dict[key]
+                            amount += 1
+        repeat_keys=["swinViT.patch_embed.proj.weight","encoder1.layer.conv1.conv.weight","encoder1.layer.conv3.conv.weight"]
+        for  key in repeat_keys:
+            store_dict[key] = torch.repeat_interleave(store_dict[key],repeats=2, dim=1)
         print(amount, len(model_dict.keys()))
         model.load_state_dict(store_dict)
         print('Use SuPreM SwinUnetr backbone pretrained weights')
@@ -139,16 +143,19 @@ def process(args):
             store_dict = model.state_dict()
             amount = 0
             for key in model_dict.keys():
-                new_key = '.'.join(key.split('.')[1:])
-                if new_key in store_dict.keys():
-                    store_dict[new_key] = model_dict[key]   
-                    amount += 1
-                else:
-                    new_key = '.'.join(key.split('.')[2:])
+                if 'out_tr' not in key:
+                    new_key = '.'.join(key.split('.')[1:])
                     if new_key in store_dict.keys():
                         store_dict[new_key] = model_dict[key]   
                         amount += 1
-
+                    else:
+                        new_key = '.'.join(key.split('.')[2:])
+                        if new_key in store_dict.keys():
+                            store_dict[new_key] = model_dict[key]   
+                            amount += 1
+            repeat_keys=["down_tr64.ops.0.conv1.weight"]
+            for  key in repeat_keys:
+                store_dict[key] = torch.repeat_interleave(store_dict[key],repeats=2, dim=1)
             model.load_state_dict(store_dict)
             print(amount, len(store_dict.keys()))
             print('Use SuPreM UNet backbone pretrained weights')

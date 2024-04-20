@@ -31,7 +31,7 @@ from monai.networks.nets import SegResNet
 from dataset.dataloader import get_loader
 from utils.utils_test import dice_score, check_data, TEMPLATE, get_key, NUM_CLASS, surface_dice
 from optimizers.lr_scheduler import LinearWarmupCosineAnnealingLR
-from dataset.dataloader import totalseg_taskmap_set, class_map_part_muscles, class_map_part_organs, class_map_part_vertebrae, class_map_part_cardiac
+from dataset.dataloader import totalseg_taskmap_set
 
 
 torch.multiprocessing.set_sharing_strategy('file_system')
@@ -288,6 +288,7 @@ def main():
     parser.add_argument('--fold_t', default=0, type=int, help='Which dataset is used as the test set in k fold cross validation')
     parser.add_argument('--fold', default=5, type=int, help='k fold cross validation')
     parser.add_argument('--seed', default=0, type=int, help='random seed')
+    parser.add_argument('--checkpoint', default='sup_swin', help='pretrain checkpoint name') 
     args = parser.parse_args()
     assert args.checkpoint in ['tang', 'jose', 'univ_swin', 'voco','sup_swin', 'genesis', 'unimiss_tiny', 'unimiss_small', 'med3d', 'dodnet', 'univ_unet', 'sup_unet', 'sup_seg',]
     pre_dict={'tang':'self_supervised_nv_swin_unetr_5050.pt',
