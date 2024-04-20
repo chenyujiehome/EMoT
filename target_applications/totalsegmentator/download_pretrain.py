@@ -1,6 +1,7 @@
 import os
 import requests
 from train import pre_dict
+import argparse
 # 指定下载的 URL 和文件路径
 def main(args):
     file_name=pre_dict[args.checkpoint]
