@@ -3,8 +3,8 @@
 cd /mnt/amlt_code/SuPreM/target_applications/totalsegmentator
 RANDOM_PORT=$((RANDOM % 64512 + 1024))
 datapath=/mnt/amlt_code/prostate_data/ # change to /path/to/your/data/TotalSegmentator
-arch=swinunetr # support swinunetr, unet, and segresnet
-suprem_path=pretrained_weights/supervised_suprem_swinunetr_2100.pth
+checkpoint=tang
+python download.py  --checkpoint $checkpoint
 target_task=vertebrae
 num_target_class=3
 num_target_annotation=64

@@ -34,7 +34,35 @@ torch.multiprocessing.set_sharing_strategy('file_system')
 
 dice_metric = DiceMetric(include_background=True, reduction="mean_batch", get_not_nans=False)
 loss_function = DiceCELoss(to_onehot_y=True, softmax=True)
-
+pre_dict={'tang':'self_supervised_nv_swin_unetr_5050.pt',
+            "jose":'self_supervised_nv_swin_unetr_50000.pth',
+            "univ_swin":'supervised_clip_driven_universal_swin_unetr_2100.pth',
+            'sup_swin':'supervised_suprem_swinunetr_2100.pth',
+            'genesis':'self_supervised_models_genesis_unet_620.pt', 
+            "unimiss_tiny":'self_supervised_unimiss_nnunet_tiny_5022.pth',
+            "unimiss_small":'self_supervised_unimiss_nnunet_small_5022.pth',
+            "med3d":'supervised_med3D_residual_unet_1623.pth',
+            "dodnet":'supervised_dodnet_unet_920.pth',
+            "univ_unet":'supervised_clip_driven_universal_unet_2100.pth',
+            "sup_unet":'supervised_suprem_unet_2100.pth',
+            "sup_seg":'supervised_suprem_segresnet_2100.pth',
+            "voco":"VoCo_10k.pt",
+            }
+back_dict= {
+'tang': 'swinunetr',
+'jose': 'swinunetr',
+'univ_swin': 'swinunetr',
+'sup_swin': 'swinunetr',
+'voco': 'swinunetr',
+'genesis': 'unet',
+'unimiss_tiny': 'unet',
+'unimiss_small': 'unet',
+'med3d': 'unet',
+'dodnet': 'unet',
+'univ_unet': 'unet',
+'sup_unet': 'unet',
+'sup_seg': 'segresnet'
+}
 def train(args, train_loader, model, optimizer):
     model.train()
     loss_ave = 0
@@ -274,35 +302,7 @@ def main():
     parser.add_argument('--seed', default=0, type=int, help='random seed')
     args = parser.parse_args()
     assert args.checkpoint in ['tang', 'jose', 'univ_swin', 'voco','sup_swin', 'genesis', 'unimiss_tiny', 'unimiss_small', 'med3d', 'dodnet', 'univ_unet', 'sup_unet', 'sup_seg',]
-    pre_dict={'tang':'self_supervised_nv_swin_unetr_5050.pt',
-              "jose":'self_supervised_nv_swin_unetr_50000.pth',
-              "univ_swin":'supervised_clip_driven_universal_swin_unetr_2100.pth',
-             'sup_swin':'supervised_suprem_swinunetr_2100.pth',
-             'genesis':'self_supervised_models_genesis_unet_620.pt', 
-             "unimiss_tiny":'self_supervised_unimiss_nnunet_tiny_5022.pth',
-             "unimiss_small":'self_supervised_unimiss_nnunet_small_5022.pth',
-             "med3d":'supervised_med3D_residual_unet_1623.pth',
-             "dodnet":'supervised_dodnet_unet_920.pth',
-             "univ_unet":'supervised_clip_driven_universal_unet_2100.pth',
-             "sup_unet":'supervised_suprem_unet_2100.pth',
-             "sup_seg":'supervised_suprem_segresnet_2100.pth',
-             "voco":"VoCo_10k.pt",
-             }
-    back_dict= {
-    'tang': 'swinunetr',
-    'jose': 'swinunetr',
-    'univ_swin': 'swinunetr',
-    'sup_swin': 'swinunetr',
-    'voco': 'swinunetr',
-    'genesis': 'unet',
-    'unimiss_tiny': 'unet',
-    'unimiss_small': 'unet',
-    'med3d': 'unet',
-    'dodnet': 'unet',
-    'univ_unet': 'unet',
-    'sup_unet': 'unet',
-    'sup_seg': 'segresnet'
-    }
+
 
     if args.model_backbone is  None:
         args.model_backbone = back_dict[args.checkpoint]
