@@ -1,15 +1,15 @@
 # Single GPU
 
-cd /home/fanlinghuang/TAD-chenyujie/pretrain4_prostate/tang/src/SuPreM/target_applications/totalsegmentator
-RANDOM_PORT=$((RANDOM % 64512 + 1024))
-datapath=/home/fanlinghuang/TAD-chenyujie/pretrain4_prostate/tang/src/prostate_data/ # change to /path/to/your/data/TotalSegmentator
-arch=swinunetr # support swinunetr, unet, and segresnet
-suprem_path=pretrained_weights/self_supervised_nv_swin_unetr_5050.pt
-target_task=vertebrae
+cd /home/azureuser/SuPreM/target_applications/totalsegmentator
+datapath=/home/azureuser/prostate_data/ # change to /path/to/your/data/TotalSegmentator
+checkpoint=tang
+python download.py  --checkpoint $checkpoint
+target_task=prostate
 num_target_class=3
 num_target_annotation=64
-checkpoint_path=/home/fanlinghuang/TAD-chenyujie/pretrain4_prostate/tang/src/SuPreM/target_applications/totalsegmentator/out/efficiency.$arch.$target_task.number$num_target_annotation/best_model.pth
 fold=5
 for i in $(seq 0 $((fold-1))); do
-    python -W ignore -m torch.distributed.launch --nproc_per_node=1 --master_port=$RANDOM_PORT train.py --dist False --model_backbone $arch --log_name efficiency.$arch.$target_task.number$num_target_annotation --map_type $target_task --num_class $num_target_class --dataset_path $datapath --num_workers 8 --batch_size 2 --pretrain $suprem_path --percent $num_target_annotation --fold_t $i --fold $fold
+    checkpoint_path=out/efficiency.$checkpoint.$target_task.number$num_target_annotation/model_fold_$i.pth
+    python -W ignore -m torch.distributed.launch --nproc_per_node=1  train.py --dist False --checkpoint $checkpoint --log_name efficiency.$checkpoint.$target_task.number$num_target_annotation --map_type $target_task --num_class $num_target_class --dataset_path $datapath --num_workers 8 --batch_size 2  --percent $num_target_annotation --fold_t $i --fold $fold
+    python -W ignore -m torch.distributed.launch --nproc_per_node=1  test.py --dist False --checkpoint $checkpoint --log_name efficiency.$checkpoint.$target_task.number$num_target_annotation --map_type $target_task --num_class $num_target_class --dataset_path $datapath --num_workers 8 --batch_size 2 --pretrain $checkpoint_path --train_type efficiency --fold_t $i --fold $fold
 done 
