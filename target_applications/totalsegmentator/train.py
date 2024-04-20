@@ -304,8 +304,8 @@ def main():
     'sup_seg': 'segresnet'
     }
 
-    if args.backbone is  None:
-        args.backbone = back_dict[args.checkpoint]
+    if args.model_backbone is  None:
+        args.model_backbone = back_dict[args.checkpoint]
     if args.pretrain is  None:
         args.pretrain = "pretrained_weights/"+pre_dict[args.checkpoint]
     process(args=args)
