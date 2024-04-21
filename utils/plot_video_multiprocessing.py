@@ -213,16 +213,14 @@ def event(folder, args):
         Orientationd(keys=["image"], axcodes="RAS"),
         Spacingd(
             keys=["image"],
-            pixdim=(args.space_x, args.space_y, args.space_z),
+            pixdim=(1.0,1.0,1.0),
             mode=("bilinear"),
         ),
-        # SpatialPadd(keys=["image", "label"], spatial_size=[192, 192, 64]),
-        # RandSpatialCropd(keys=["image", "label"], roi_size=[192, 192, 64], random_size=False),
         ScaleIntensity(keys=["image"],channel_wise=True),
     ]
 )
     test_dataset = DecathlonDataset(
-            root_dir="/home/fanlinghuang/TAD-chenyujie/",
+            root_dir="/home/azureuser/prostate_data/",
             task="Task05_Prostate",
             section="test",
             transform=test_transform,
@@ -249,7 +247,7 @@ def main(args):
 if __name__ == "__main__":
     
     parser = argparse.ArgumentParser()
-    parser.add_argument('--abdomen_atlas', dest='abdomen_atlas', type=str, default='/home/fanlinghuang/TAD-chenyujie/Task05_Prostate/imagesTs',
+    parser.add_argument('--abdomen_atlas', dest='abdomen_atlas', type=str, default='/home/azureuser/prostate_data/Task05_Prostate/imagesTs',
                         help='the directory of the AbdomenAtlas dataset',
                        )
     parser.add_argument("--png_save_path", dest='png_save_path', type=str, default='./materials',
@@ -266,7 +264,7 @@ if __name__ == "__main__":
                        )
     parser.add_argument("--image_channel", type=int, default=0,
                        )
-    parser.add_argument("--mask_path",  type=str, default="/home/fanlinghuang/TAD-chenyujie/dataset/pretrain4_trained_MSD_plot/sup_swin/target_applications/totalsegmentator/save_tensor_sup_swinunetr.pt",
+    parser.add_argument("--mask_path",  type=str, default="/home/azureuser/mri_result/save_tensor_genesis_unet.pt",
                        )
     args = parser.parse_args()
 

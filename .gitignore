@@ -11,3 +11,6 @@ __pycache__/
 *.pyo
 *.pyd
 cufile.log
+gifs/
+videos/
+materials/
