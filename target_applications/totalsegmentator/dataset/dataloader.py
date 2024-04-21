@@ -68,20 +68,14 @@ class ScaleIntensity(MapTransform):
             d[key] = self.scaler(d[key])
         return d
 class ConvertToMultiChannelBasedOnBratsClassesd(MapTransform):
-    """
-    Convert labels to multi channels based on brats classes:
-    label 1 is the peritumoral edema
-    label 2 is the GD-enhancing tumor
-    label 3 is the necrotic and non-enhancing tumor core
-    The possible classes are TC (Tumor core), WT (Whole tumor)
-    and ET (Enhancing tumor).
-
-    """
 
     def __call__(self, data):
         d = dict(data)
         for key in self.keys:
-            d[key] = d[key].unsqueeze(0)
+            result = []
+            result.append(d[key] == 1)
+            result.append(d[key] == 2)
+            d[key] = torch.stack(result, axis=0).float()
         return d
 class NameData(MapTransform):
 
