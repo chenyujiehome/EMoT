@@ -111,7 +111,7 @@ def get_loader(args):
         ),
         SpatialPadd(keys=["image", "label"], spatial_size=(args.roi_x, args.roi_y, args.roi_z)),
         RandSpatialCropd(keys=["image", "label"], roi_size=(args.roi_x, args.roi_y, args.roi_z), random_size=False),
-        ScaleIntensity(keys=["image", "label"],channel_wise=True),
+        ScaleIntensity(keys=["image"],channel_wise=True),
         RandFlipd(keys=["image", "label"], prob=0.5, spatial_axis=0),
         RandFlipd(keys=["image", "label"], prob=0.5, spatial_axis=1),
         RandFlipd(keys=["image", "label"], prob=0.5, spatial_axis=2),
@@ -134,7 +134,7 @@ def get_loader(args):
         ),
         # SpatialPadd(keys=["image", "label"], spatial_size=[192, 192, 64]),
         # RandSpatialCropd(keys=["image", "label"], roi_size=[192, 192, 64], random_size=False),
-        ScaleIntensity(keys=["image", "label"],channel_wise=True),
+        ScaleIntensity(keys=["image"],channel_wise=True),
     ]
 )
 
