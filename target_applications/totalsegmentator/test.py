@@ -235,10 +235,10 @@ def main():
     parser.add_argument("--device")
     parser.add_argument("--epoch", default=0)
     ## logging
-    parser.add_argument('--log_name', default='...', help='The path resume from checkpoint')
+    parser.add_argument('--log_name', default='efficiency.genesis.prostate.number64', help='The path resume from checkpoint')
     ## model load
     parser.add_argument('--resume', default=None, help='The path resume from checkpoint')
-    parser.add_argument('--pretrain', default='...', 
+    parser.add_argument('--pretrain', default='/home/azureuser/SuPreM/target_applications/totalsegmentator/out/efficiency.genesis.prostate.number64/model_fold_0.pth', 
                         help='The path of pretrain model')
     parser.add_argument('--trans_encoding', default='rand_embedding', 
                         help='the type of encoding: rand_embedding or word_embedding')
@@ -268,8 +268,8 @@ def main():
     parser.add_argument('--roi_y', default=96, type=int, help='roi size in y direction')
     parser.add_argument('--roi_z', default=96, type=int, help='roi size in z direction')
     parser.add_argument('--num_samples', default=1, type=int, help='sample number in each ct')
-    parser.add_argument('--map_type', default='vertebrae', help='sample number in each ct')
-    parser.add_argument('--num_class', default=25, type=int, help='class num')
+    parser.add_argument('--map_type', default='prostate', help='sample number in each ct')
+    parser.add_argument('--num_class', default=3, type=int, help='class num')
 
     parser.add_argument('--phase', default='train', help='train or validation or test')
     parser.add_argument('--uniform_sample', action="store_true", default=False, help='whether utilize uniform sample strategy')
@@ -280,15 +280,15 @@ def main():
     parser.add_argument('--cache_dataset', action="store_true", default=False, help='whether use cache dataset')
     parser.add_argument('--cache_rate', default=0.005, type=float, help='The percentage of cached data in total')
     parser.add_argument('--overlap', default=0.5, type=float, help='overlap for sliding_window_inference')
-    parser.add_argument('--dataset_path', default='...', help='dataset path')
+    parser.add_argument('--dataset_path', default='/home/azureuser/prostate_data/', help='dataset path')
     parser.add_argument("--weight_std", default=True)
-    parser.add_argument('--model_backbone', default='unet', help='model backbone, also avaliable for swinunetr')
-    parser.add_argument('--train_type', default='scratch', help='either train from scratch or transfer')
+    parser.add_argument('--model_backbone', default=None, help='model backbone, also avaliable for swinunetr')
+    parser.add_argument('--train_type', default='efficiency', help='either train from scratch or transfer')
     parser.add_argument('--percent', default=1081, type=int, help='pre-training using numbers of images')
     parser.add_argument('--fold_t', default=0, type=int, help='Which dataset is used as the test set in k fold cross validation')
     parser.add_argument('--fold', default=5, type=int, help='k fold cross validation')
     parser.add_argument('--seed', default=0, type=int, help='random seed')
-    parser.add_argument('--checkpoint', default='sup_swin', help='pretrain checkpoint name') 
+    parser.add_argument('--checkpoint', default='genesis', help='pretrain checkpoint name') 
     args = parser.parse_args()
     assert args.checkpoint in ['tang', 'jose', 'univ_swin', 'voco','sup_swin', 'genesis', 'unimiss_tiny', 'unimiss_small', 'med3d', 'dodnet', 'univ_unet', 'sup_unet', 'sup_seg',]
     pre_dict={'tang':'self_supervised_nv_swin_unetr_5050.pt',
