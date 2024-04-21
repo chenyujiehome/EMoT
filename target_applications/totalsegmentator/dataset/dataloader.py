@@ -40,7 +40,6 @@ from typing import IO, TYPE_CHECKING, Any, Callable, Dict, Hashable, List, Mappi
 import SimpleITK as sitk
 
 sys.path.append("..") 
-from utils.utils import get_key
 
 from torch.utils.data import Subset
 
@@ -405,7 +404,29 @@ def get_loader(args):
     
 
 if __name__ == "__main__":
-    train_loader, test_loader = partial_label_dataloader()
-    for index, item in enumerate(test_loader):
-        print(item['image'].shape, item['label'].shape, item['task_id'])
-        input()
+    import argparse
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--dataset_path", type=str, default="/home/azureuser/total_data/")
+    parser.add_argument("--map_type", type=str, default="vertebrae")
+    parser.add_argument("--fold", type=int, default=5)
+    parser.add_argument("--fold_t", type=int, default=1)
+    parser.add_argument("--batch_size", type=int, default=2)
+    parser.add_argument("--dist",  default=False,type=bool)
+    parser.add_argument('--space_x', default=1.0, type=float, help='spacing in x direction')
+    parser.add_argument('--space_y', default=1.0, type=float, help='spacing in y direction')
+    parser.add_argument('--space_z', default=1.0, type=float, help='spacing in z direction')
+    parser.add_argument("--num_workers", type=int, default=2)
+    parser.add_argument("--seed", type=int, default=0)
+    parser.add_argument('--roi_x', default=96, type=int, help='roi size in x direction')
+    parser.add_argument('--roi_y', default=96, type=int, help='roi size in y direction')
+    parser.add_argument('--roi_z', default=96, type=int, help='roi size in z direction')
+    parser.add_argument('--a_min', default=-250, type=float, help='a_min in ScaleIntensityRanged')
+    parser.add_argument('--a_max', default=250, type=float, help='a_max in ScaleIntensityRanged')
+    parser.add_argument('--b_min', default=0.0, type=float, help='b_min in ScaleIntensityRanged')
+    parser.add_argument('--b_max', default=1.0, type=float, help='b_max in ScaleIntensityRanged')
+    parser.add_argument('--num_samples', default=1, type=int, help='sample number in each ct')
+    parser.add_argument('--dataset_list', nargs='+', default=['total_set'])
+    parser.add_argument('--percent', default=1081, type=int, help='percent of training data')
+    parser.add_argument('--data_txt_path', default='./dataset/dataset_list/', help='data txt path')
+    args=parser.parse_args()
+    train_loader, train_sampler, val_loader, test_loader=get_loader(args)
