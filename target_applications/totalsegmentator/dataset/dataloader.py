@@ -72,10 +72,7 @@ class ConvertToMultiChannelBasedOnBratsClassesd(MapTransform):
     def __call__(self, data):
         d = dict(data)
         for key in self.keys:
-            result = []
-            result.append(d[key] == 1)
-            result.append(d[key] == 2)
-            d[key] = torch.stack(result, axis=0).float()
+            d[key] = d[key].unsqueeze(0)
         return d
 class NameData(MapTransform):
 
