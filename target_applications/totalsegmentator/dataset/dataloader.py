@@ -13,11 +13,6 @@ from monai.inferers import sliding_window_inference
 from monai.metrics import DiceMetric
 from monai.networks.nets import SegResNet
 from monai.transforms import (
-    ScaleIntensity,
-    Activations,
-    Activationsd,
-    AsDiscrete,
-    AsDiscreted,
     Compose,
     Invertd,
     LoadImaged,
@@ -45,6 +40,33 @@ class_map_part_prostate = {
 totalseg_taskmap_set = {
     'prostate': class_map_part_prostate,
 }
+class ScaleIntensity(MapTransform):
+
+    def __init__(
+        self,
+        keys ,
+        allow_missing_keys: bool = True,
+        channel_wise: bool = True,
+    ) -> None:
+        super().__init__(keys, allow_missing_keys)
+        self.channel_wise = channel_wise
+
+    def scaler(self, img):
+        if self.channel_wise:
+            # Assume the channel dimension is the first dimension
+            for i in range(img.shape[0]):
+                if torch.max(img[i]) != 0:
+                    img[i] = img[i] / torch.max(img[i])
+        else:
+            if torch.max(img) != 0:
+                img = img / torch.max(img)
+        return img
+
+    def __call__(self, data) :
+        d = dict(data)
+        for key in self.key_iterator(d):
+            d[key] = self.scaler(d[key])
+        return d
 class ConvertToMultiChannelBasedOnBratsClassesd(MapTransform):
     """
     Convert labels to multi channels based on brats classes:
@@ -89,7 +111,7 @@ def get_loader(args):
         ),
         SpatialPadd(keys=["image", "label"], spatial_size=(args.roi_x, args.roi_y, args.roi_z)),
         RandSpatialCropd(keys=["image", "label"], roi_size=(args.roi_x, args.roi_y, args.roi_z), random_size=False),
-        ScaleIntensity(minv=0.0, maxv=1.0,channel_wise=True),
+        ScaleIntensity(keys=["image", "label"],channel_wise=True),
         RandFlipd(keys=["image", "label"], prob=0.5, spatial_axis=0),
         RandFlipd(keys=["image", "label"], prob=0.5, spatial_axis=1),
         RandFlipd(keys=["image", "label"], prob=0.5, spatial_axis=2),
@@ -112,7 +134,7 @@ def get_loader(args):
         ),
         # SpatialPadd(keys=["image", "label"], spatial_size=[192, 192, 64]),
         # RandSpatialCropd(keys=["image", "label"], roi_size=[192, 192, 64], random_size=False),
-        ScaleIntensity(minv=0.0, maxv=1.0,channel_wise=True),
+        ScaleIntensity(keys=["image", "label"],channel_wise=True),
     ]
 )
 
@@ -195,13 +217,19 @@ def get_loader(args):
 if __name__ == "__main__":
     import argparse
     parser = argparse.ArgumentParser()
-    parser.add_argument("--dataset_path", type=str, default="/home/fanlinghuang/TAD-chenyujie/")
+    parser.add_argument("--dataset_path", type=str, default="/home/azureuser/prostate_data/")
     parser.add_argument("--fold", type=int, default=5)
     parser.add_argument("--fold_t", type=int, default=1)
     parser.add_argument("--batch_size", type=int, default=2)
     parser.add_argument("--dist",  default=False,type=bool)
+    parser.add_argument('--space_x', default=1.0, type=float, help='spacing in x direction')
+    parser.add_argument('--space_y', default=1.0, type=float, help='spacing in y direction')
+    parser.add_argument('--space_z', default=1.0, type=float, help='spacing in z direction')
     parser.add_argument("--num_workers", type=int, default=2)
     parser.add_argument("--seed", type=int, default=0)
+    parser.add_argument('--roi_x', default=96, type=int, help='roi size in x direction')
+    parser.add_argument('--roi_y', default=96, type=int, help='roi size in y direction')
+    parser.add_argument('--roi_z', default=96, type=int, help='roi size in z direction')
     
     
     args=parser.parse_args()

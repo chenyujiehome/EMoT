@@ -3,7 +3,7 @@
 *.pth
 
 # Ignore out/ directories
-*/out/
+out/
 
 # Ignore Python cache
 __pycache__/
