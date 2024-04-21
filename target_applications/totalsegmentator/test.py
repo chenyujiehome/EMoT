@@ -31,8 +31,6 @@ from monai.networks.nets import SegResNet
 from dataset.dataloader import get_loader
 from utils.utils_test import dice_score, check_data, TEMPLATE, get_key, NUM_CLASS, surface_dice
 from optimizers.lr_scheduler import LinearWarmupCosineAnnealingLR
-from dataset.dataloader import totalseg_taskmap_set, class_map_part_muscles, class_map_part_organs, class_map_part_vertebrae, class_map_part_cardiac
-
 
 torch.multiprocessing.set_sharing_strategy('file_system')
 
