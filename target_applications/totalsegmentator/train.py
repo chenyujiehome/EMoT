@@ -63,6 +63,28 @@ back_dict= {
 'sup_unet': 'unet',
 'sup_seg': 'segresnet'
 }
+def validation(model, ValLoader, args):
+    model.eval()
+    dice_stat = np.zeros((2, args.num_class))
+    post_label = AsDiscrete(to_onehot=args.num_class)
+    post_pred = AsDiscrete(argmax=True, to_onehot=args.num_class)
+    for index, batch in enumerate(tqdm(ValLoader)):
+        image, val_labels, name = batch["image"].to(args.device), batch["label"].to(args.device), batch["name"]
+        with torch.no_grad():
+            val_outputs = sliding_window_inference(image, (args.roi_x, args.roi_y, args.roi_z), 1, model, overlap=args.overlap, mode='gaussian')
+        val_labels_list = decollate_batch(val_labels)
+        val_labels_convert = [
+            post_label(val_label_tensor) for val_label_tensor in val_labels_list
+        ]
+        val_outputs_list = decollate_batch(val_outputs)
+        val_output_convert = [
+            post_pred(val_pred_tensor) for val_pred_tensor in val_outputs_list
+        ]        
+        dice_metric(y_pred=val_output_convert, y=val_labels_convert)
+    dice_array = dice_metric.aggregate()
+    mean_dice_val = dice_metric.aggregate().mean().item()
+    dice_metric.reset()
+    return mean_dice_val
 def train(args, train_loader, model, optimizer):
     model.train()
     loss_ave = 0
@@ -231,7 +253,20 @@ def process(args):
         if rank == 0:
             writer.add_scalar('train_loss', loss, args.epoch)
             writer.add_scalar('lr', scheduler.get_lr(), args.epoch)
-        
+        if (args.epoch % args.store_num == 0):
+            mean_dice = validation(model, val_loader, args)
+            if mean_dice > best_dice:
+                best_dice = mean_dice
+                checkpoint = {
+                    "net": model.state_dict(),
+                    'optimizer':optimizer.state_dict(),
+                    'scheduler': scheduler.state_dict(),
+                    "epoch": args.epoch
+                }
+                if not os.path.isdir('out/' + args.log_name):
+                    os.mkdir('out/' + args.log_name)
+                torch.save(checkpoint, 'out/' + args.log_name + '/best_model.pth')
+                print('The best model saved at epoch:', args.epoch)
         checkpoint = {
                 "net": model.state_dict(),
                 'optimizer': optimizer.state_dict(),
@@ -241,7 +276,7 @@ def process(args):
         directory = 'out/' + args.log_name
         if not os.path.isdir(directory):
             os.mkdir(directory)
-        torch.save(checkpoint, directory + f'/model_fold_{str(args.fold_t)}.pth')
+        torch.save(checkpoint, directory + '/model.pth')
 
         args.epoch += 1
 
@@ -304,8 +339,6 @@ def main():
     parser.add_argument('--model_backbone', default=None, help='model backbone, also avaliable for swinunetr')
     parser.add_argument('--percent', default=64, type=int, help='percent of training data')
     parser.add_argument('--checkpoint', default='genesis', help='pretrain checkpoint name') 
-    parser.add_argument('--fold_t', default=0, type=int, help='Which dataset is used as the test set in k fold cross validation')
-    parser.add_argument('--fold', default=5, type=int, help='k fold cross validation')
     parser.add_argument('--seed', default=0, type=int, help='random seed')
     args = parser.parse_args()
     assert args.checkpoint in ['tang', 'jose', 'univ_swin', 'voco','sup_swin', 'genesis', 'unimiss_tiny', 'unimiss_small', 'med3d', 'dodnet', 'univ_unet', 'sup_unet', 'sup_seg',]

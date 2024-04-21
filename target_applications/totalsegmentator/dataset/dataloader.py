@@ -128,7 +128,24 @@ def get_loader(args):
         ScaleIntensity(keys=["image"],channel_wise=True),
     ]
 )
-
+    test_transform = Compose(
+    [
+        NameData(keys=["image"]),
+        LoadImaged(keys=["image"]),
+        EnsureChannelFirstd(keys="image"),
+        EnsureTyped(keys=["image"]),
+        # ConvertToMultiChannelBasedOnBratsClassesd(keys="label"),
+        Orientationd(keys=["image"], axcodes="RAS"),
+        Spacingd(
+            keys=["image"],
+            pixdim=(args.space_x, args.space_y, args.space_z),
+            mode=("bilinear"),
+        ),
+        # SpatialPadd(keys=["image", "label"], spatial_size=[192, 192, 64]),
+        # RandSpatialCropd(keys=["image", "label"], roi_size=[192, 192, 64], random_size=False),
+        ScaleIntensity(keys=["image"],channel_wise=True),
+    ]
+)
 
     # ## Quickly load data with DecathlonDataset
     # 
@@ -139,54 +156,28 @@ def get_loader(args):
     # here we don't cache any data in case out of memory issue
 
 
-    def train_val_split(train_dataset,test_dataset, k, i):
-
-        kf = KFold(n_splits=k, shuffle=True, random_state=42)
-        indices = range(len(train_dataset))
-        
-        for fold, (train_indices, val_indices) in enumerate(kf.split(indices)):
-            if fold == i:
-                train_subset_indices = train_indices
-                val_subset_indices = val_indices
-                break
-        np.random.shuffle(train_subset_indices)
-        np.random.shuffle(val_subset_indices)
-        train_dataset.indices = train_subset_indices
-        test_dataset.indices = val_subset_indices
-        train_dataset.data=[train_dataset.data[i] for i in train_subset_indices]
-        test_dataset.data=[test_dataset.data[i] for i in val_subset_indices]
-        return train_dataset, test_dataset
-
-    # 示例用法
-    k = args.fold
-    current_fold =args.fold_t
+   
 
     # 假设root_dir, train_transform, val_transform已经定义
-    train_dataset, val_dataset = train_val_split(
-        train_dataset=DecathlonDataset(
-            root_dir=root_dir,
-            task="Task05_Prostate",
-            transform=train_transform,  
-            section="training",
-            download=True,
-            cache_rate=0.0,
-            num_workers=4,
-            val_frac=0.0,
-        ),
-        test_dataset=DecathlonDataset(
-            root_dir=root_dir,
-            task="Task05_Prostate",
-            transform=val_transform,  
-            section="training",
-            download=False,
-            cache_rate=0.0,
-            num_workers=4,
-            val_frac=0.0,
-        ),
-        k=k,
-        i=current_fold,
+    train_dataset=DecathlonDataset(
+        root_dir=root_dir,
+        task="Task05_Prostate",
+        transform=train_transform,  
+        section="training",
+        download=True,
+        cache_rate=0.0,
+        num_workers=4,
     )
     test_dataset=DecathlonDataset(
+        root_dir=root_dir,
+        task="Task05_Prostate",
+        transform=test_transform,  
+        section="test",
+        download=False,
+        cache_rate=0.0,
+        num_workers=4,
+    )
+    val_dataset=DecathlonDataset(
             root_dir=root_dir,
             task="Task05_Prostate",
             transform=val_transform,  
@@ -194,7 +185,6 @@ def get_loader(args):
             download=False,
             cache_rate=0.0,
             num_workers=4,
-            val_frac=0.0,
         )
     train_sampler = DistributedSampler(dataset=train_dataset, even_divisible=True, shuffle=True) if args.dist else None
     train_loader = DataLoader(train_dataset, batch_size=args.batch_size, shuffle=(train_sampler is None), num_workers=args.num_workers, collate_fn=list_data_collate,
