@@ -99,13 +99,13 @@ def validation(model, ValLoader, args):
     os.makedirs(output_directory, exist_ok=True)
 
     if dice_results:
-        with open(os.path.join(output_directory, f'{args.train_type}_{args.model_backbone}_{args.map_type}_dice_validation_results.csv'), 'w', newline='') as file:
+        with open(os.path.join(output_directory, f'{args.train_type}_{args.model_backbone}_{args.map_type}_fold_{str(args.fold_t)}_dice_validation_results.csv'), 'w', newline='') as file:
             fieldnames = ["name", "background"] + list(selected_class_map.values())
             writer = csv.DictWriter(file, fieldnames=fieldnames)
             writer.writeheader()
             writer.writerows(dice_results)
     if nsd_results:
-        with open(os.path.join(output_directory, f'{args.train_type}_{args.model_backbone}_{args.map_type}_nsd_validation_results.csv'), 'w', newline='') as file:
+        with open(os.path.join(output_directory, f'{args.train_type}_{args.model_backbone}_{args.map_type}_fold_{str(args.fold_t)}_nsd_validation_results.csv'), 'w', newline='') as file:
             fieldnames = ["name", "background"] + list(selected_class_map.values())
             writer = csv.DictWriter(file, fieldnames=fieldnames)
             writer.writeheader()
