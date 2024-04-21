@@ -255,7 +255,7 @@ def main():
     parser.add_argument("--device")
     parser.add_argument("--epoch", default=0)
     ## logging
-    parser.add_argument('--log_name', default='unet_organ', help='The path resume from checkpoint')
+    parser.add_argument('--log_name', default='efficiency.genesis.prostate.number64', help='The path resume from checkpoint')
     ## model load
     parser.add_argument('--resume', default=None, help='The path resume from checkpoint')
     parser.add_argument('--pretrain', default=None, 
@@ -276,7 +276,7 @@ def main():
     parser.add_argument('--data_root_path', default='...', help='data root path')
     parser.add_argument('--data_txt_path', default='./dataset/dataset_list/', help='data txt path')
 
-    parser.add_argument('--batch_size', default=1, type=int, help='batch size')
+    parser.add_argument('--batch_size', default=2, type=int, help='batch size')
     parser.add_argument('--num_workers', default=8, type=int, help='workers numebr for DataLoader')
     parser.add_argument('--a_min', default=-250, type=float, help='a_min in ScaleIntensityRanged')
     parser.add_argument('--a_max', default=250, type=float, help='a_max in ScaleIntensityRanged')
@@ -289,8 +289,8 @@ def main():
     parser.add_argument('--roi_y', default=96, type=int, help='roi size in y direction')
     parser.add_argument('--roi_z', default=96, type=int, help='roi size in z direction')
     parser.add_argument('--num_samples', default=1, type=int, help='sample number in each ct')
-    parser.add_argument('--map_type', default='organs', help='organs | muscles | cardiac | vertebrae | ribs') 
-    parser.add_argument('--num_class', default=18, type=int, help='class num: 18 | 22 | 19 | 25 | 25')
+    parser.add_argument('--map_type', default='prostate', help='organs | muscles | cardiac | vertebrae | ribs') 
+    parser.add_argument('--num_class', default=3, type=int, help='class num: 18 | 22 | 19 | 25 | 25')
     parser.add_argument('--phase', default='train', help='train or validation or test')
     parser.add_argument('--uniform_sample', action="store_true", default=False, help='whether utilize uniform sample strategy')
     parser.add_argument('--datasetkey', nargs='+', default=['01', '02', '03', '04', '05', 
@@ -300,10 +300,10 @@ def main():
     parser.add_argument('--cache_dataset', action="store_true", default=False, help='whether use cache dataset')
     parser.add_argument('--cache_rate', default=0.005, type=float, help='The percentage of cached data in total')
     parser.add_argument('--overlap', default=0.5, type=float, help='overlap for sliding_window_inference')
-    parser.add_argument('--dataset_path', default='...', help='dataset path')
+    parser.add_argument('--dataset_path', default='/home/azureuser/prostate_data/', help='dataset path')
     parser.add_argument('--model_backbone', default=None, help='model backbone, also avaliable for swinunetr')
-    parser.add_argument('--percent', default=1081, type=int, help='percent of training data')
-    parser.add_argument('--checkpoint', default='sup_swin', help='pretrain checkpoint name') 
+    parser.add_argument('--percent', default=64, type=int, help='percent of training data')
+    parser.add_argument('--checkpoint', default='genesis', help='pretrain checkpoint name') 
     parser.add_argument('--fold_t', default=0, type=int, help='Which dataset is used as the test set in k fold cross validation')
     parser.add_argument('--fold', default=5, type=int, help='k fold cross validation')
     parser.add_argument('--seed', default=0, type=int, help='random seed')
