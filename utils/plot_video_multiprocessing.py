@@ -50,7 +50,33 @@ from monai.transforms import (
 from monai.utils import set_determinism
 
 import torch
+class ScaleIntensity(MapTransform):
 
+    def __init__(
+        self,
+        keys ,
+        allow_missing_keys: bool = True,
+        channel_wise: bool = True,
+    ) -> None:
+        super().__init__(keys, allow_missing_keys)
+        self.channel_wise = channel_wise
+
+    def scaler(self, img):
+        if self.channel_wise:
+            # Assume the channel dimension is the first dimension
+            for i in range(img.shape[0]):
+                if torch.max(img[i]) != 0:
+                    img[i] = img[i] / torch.max(img[i])
+        else:
+            if torch.max(img) != 0:
+                img = img / torch.max(img)
+        return img
+
+    def __call__(self, data) :
+        d = dict(data)
+        for key in self.key_iterator(d):
+            d[key] = self.scaler(d[key])
+        return d
 class NameData(MapTransform):
 
 
@@ -75,7 +101,7 @@ class ConvertToMultiChannelBasedOnBratsClassesd(MapTransform):
         for key in self.keys:
             d[key] = d[key].unsqueeze(0)
         return d
-low_range = -150
+low_range = 0
 high_range = 250
 # 除以max 乘以255
 class_of_interest = ['PZ',
@@ -124,10 +150,10 @@ def full_make_png(case_name, args,data):
 
     mask = load_individual_maps( case_name)
 
-    
+    high_range = torch.max(image)
     image[image > high_range] = high_range
     image[image < low_range] = low_range
-    image = np.round((image - low_range) / (high_range - low_range) * 255.0).astype(np.uint8)
+    image = np.round((image / high_range)  * 255.0).astype(np.uint8)
     image = np.repeat(image.reshape(image.shape[0],image.shape[1],image.shape[2],1), 3, axis=3)
     
     image_mask = add_colorful_mask(image, mask, CLASS_IND)
@@ -178,23 +204,23 @@ def make_avi(case_name, plane, args,data):
 def event(folder, args):
 
     test_transform = Compose(
-        [
-            NameData(keys=["image"]),
-            LoadImaged(keys=["image"]),
-            EnsureChannelFirstd(keys="image"),
-            EnsureTyped(keys=["image"]),
-            # ConvertToMultiChannelBasedOnBratsClassesd(keys="label"),
-            Orientationd(keys=["image"], axcodes="RAS"),
-            Spacingd(
-                keys=["image"],
-                pixdim=(1.0, 1.0, 1.0),
-                mode=("bilinear"),
-            ),
-            # # SpatialPadd(keys=["image", "label"], spatial_size=[192, 192, 64]),
-            # # RandSpatialCropd(keys=["image", "label"], roi_size=[192, 192, 64], random_size=False),
-            # NormalizeIntensityd(keys="image", nonzero=True, channel_wise=True),
-        ]
-    )
+    [
+        NameData(keys=["image"]),
+        LoadImaged(keys=["image"]),
+        EnsureChannelFirstd(keys="image"),
+        EnsureTyped(keys=["image"]),
+        # ConvertToMultiChannelBasedOnBratsClassesd(keys="label"),
+        Orientationd(keys=["image"], axcodes="RAS"),
+        Spacingd(
+            keys=["image"],
+            pixdim=(args.space_x, args.space_y, args.space_z),
+            mode=("bilinear"),
+        ),
+        # SpatialPadd(keys=["image", "label"], spatial_size=[192, 192, 64]),
+        # RandSpatialCropd(keys=["image", "label"], roi_size=[192, 192, 64], random_size=False),
+        ScaleIntensity(keys=["image"],channel_wise=True),
+    ]
+)
     test_dataset = DecathlonDataset(
             root_dir="/home/fanlinghuang/TAD-chenyujie/",
             task="Task05_Prostate",
