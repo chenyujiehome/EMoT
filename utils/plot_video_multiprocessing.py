@@ -157,7 +157,7 @@ def full_make_png(case_name, args,data):
     image = np.repeat(image.reshape(image.shape[0],image.shape[1],image.shape[2],1), 3, axis=3)
     
     image_mask = add_colorful_mask(image, mask, CLASS_IND)
-    
+    image_mask= np.rot90(image_mask, k=1, axes=(0, 1))
     for z in range(mask.shape[2]):
         Image.fromarray(image_mask[:,:,z,:]).save(os.path.join(args.png_save_path, 'axial', case_name, str(z)+'.png'))
 
@@ -264,7 +264,7 @@ if __name__ == "__main__":
                        )
     parser.add_argument("--image_channel", type=int, default=0,
                        )
-    parser.add_argument("--mask_path",  type=str, default="/home/azureuser/mri_result/save_tensor_genesis_unet.pt",
+    parser.add_argument("--mask_path",  type=str, default="/home/azureuser/SuPreM/target_applications/totalsegmentator/save_tensor_genesis_unet.pt",
                        )
     args = parser.parse_args()
 

@@ -21,10 +21,10 @@ from tensorboardX import SummaryWriter
 
 from monai.losses import DiceCELoss
 from monai.inferers import sliding_window_inference
-from monai.data import load_decathlon_datalist, decollate_batch, DistributedSampler
+from monai.data import load_decathlon_datalist, decollate_batch, DistributedSampler,MetaTensor
 from monai.transforms import AsDiscrete
 from monai.metrics import DiceMetric
-
+import cc3d
 from model.SwinUNETR import SwinUNETR
 from model.unet3d import UNet3D
 from monai.networks.nets import SegResNet
@@ -53,6 +53,20 @@ def validation(model, ValLoader, args):
         
         val_outputs_list = decollate_batch(val_outputs)
         val_output_convert = [post_pred(val_pred_tensor) for val_pred_tensor in val_outputs_list]
+        def postprocess(val):
+            meta=val.meta
+            affine=val.affine
+            applied_operations=val.applied_operations
+            val=val.cpu().numpy()
+            for i in range(val.shape[0]):
+                val[i,:,:,:]=cc3d.largest_k(
+                val[i,:,:,:], k=1, 
+                connectivity=26, delta=0,
+                return_N=False,
+                )
+            return MetaTensor(val,affine=affine,meta=meta,applied_operations=applied_operations)
+            
+        val_output_convert[0]=postprocess(val_output_convert[0])
         for i in range(len(name_list)):
             save_tensor[name_list[i]] = val_output_convert[i] 
     torch.save(save_tensor, f'save_tensor_{args.checkpoint}_{args.model_backbone}.pt')
