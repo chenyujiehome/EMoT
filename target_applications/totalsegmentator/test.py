@@ -11,7 +11,7 @@ import csv
 import glob
 import nibabel as nib
 from collections import OrderedDict
-
+import cc3d
 import warnings
 warnings.filterwarnings("ignore")
 
@@ -21,7 +21,7 @@ from tensorboardX import SummaryWriter
 
 from monai.losses import DiceCELoss
 from monai.inferers import sliding_window_inference
-from monai.data import load_decathlon_datalist, decollate_batch, DistributedSampler
+from monai.data import load_decathlon_datalist, decollate_batch, DistributedSampler,MetaTensor
 from monai.transforms import AsDiscrete
 from monai.metrics import DiceMetric
 
@@ -72,10 +72,22 @@ def validation(model, ValLoader, args):
         # val_labels_convert = [post_label(val_label_tensor) for val_label_tensor in val_labels_list]
         # if the gpu memory is not enough, you can try to use the following code as alternative
         val_labels_convert = [post_label(val_label_tensor.cpu()) for val_label_tensor in val_labels_list]
-        
         val_outputs_list = decollate_batch(val_outputs)
         val_output_convert = [post_pred(val_pred_tensor) for val_pred_tensor in val_outputs_list]
-        
+        def postprocess(val):
+            meta=val.meta
+            affine=val.affine
+            applied_operations=val.applied_operations
+            val=val.cpu().numpy()
+            for i in range(val.shape[0]):
+                val[i,:,:,:]=cc3d.largest_k(
+                val[i,:,:,:], k=1, 
+                connectivity=26, delta=0,
+                return_N=False,
+                )
+            return MetaTensor(val,affine=affine,meta=meta,applied_operations=applied_operations)
+            
+        val_output_convert[0]=postprocess(val_output_convert[0])
         for lbl, pred in zip(val_labels_convert, val_output_convert):
             case_name = name[0] if isinstance(name, (list, tuple)) else name  # Adjusting for the possibility that name is not a list.
             dice_case_result = {"name": case_name, "background": 1.0}  # background class with dice 1.0
