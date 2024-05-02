@@ -12,8 +12,7 @@ We developed a suite of pre-trained 3D models, named **SuPreM**, that combined t
 [Wenxuan Li](https://scholar.google.com/citations?hl=en&user=tpNZM2YAAAAJ), [Alan Yuille](https://www.cs.jhu.edu/~ayuille/), and [Zongwei Zhou](https://www.zongweiz.com/)<sup>*</sup> <br/>
 Johns Hopkins University  <br/>
 International Conference on Learning Representations (ICLR) 2024 (oral; top 1.2%) <br/>
-[paper](https://www.cs.jhu.edu/~alanlab/Pubs23/li2023suprem.pdf) | [code](https://github.com/MrGiovanni/SuPreM) | [slides](document/promotion_slides.pdf) | [poster](document/dom_wse_poster.pdf) | [talk](https://vtizr.xetslk.com/s/1HUGNo
-) | [news](https://www.cs.jhu.edu/news/ai-and-radiologists-unite-to-map-the-abdomen/)
+<a href='https://www.zongweiz.com/dataset'><img src='https://img.shields.io/badge/Project-Page-Green'></a> <a href='https://www.cs.jhu.edu/~alanlab/Pubs23/li2023suprem.pdf'><img src='https://img.shields.io/badge/Paper-PDF-purple'></a> <a href='document/promotion_slides.pdf'><img src='https://img.shields.io/badge/Slides-PDF-orange'></a> <a href='document/dom_wse_poster.pdf'><img src='https://img.shields.io/badge/Poster-PDF-blue'></a> [![YouTube](https://badges.aleen42.com/src/youtube.svg)](https://vtizr.xetslk.com/s/1HUGNo) <a href='https://www.cs.jhu.edu/news/ai-and-radiologists-unite-to-map-the-abdomen/'><img src='https://img.shields.io/badge/WSE-News-yellow'></a>
 
 <b>Transitioning to Fully-Supervised Pre-Training with Large-Scale Radiology ImageNet for Improved AI Transferability in Three-Dimensional Medical Segmentation</b> <br/>
 [Wenxuan Li](https://scholar.google.com/citations?hl=en&user=tpNZM2YAAAAJ)<sup>1</sup>, [Junfei Xiao](https://lambert-x.github.io/)<sup>1</sup>, [Jie Liu](https://ljwztc.github.io/)<sup>2</sup>, [Yucheng Tang](https://scholar.google.com/citations?hl=en&user=0xheliUAAAAJ)<sup>3</sup>, [Alan Yuille](https://www.cs.jhu.edu/~ayuille/)<sup>1</sup>, and [Zongwei Zhou](https://www.zongweiz.com/)<sup>1,*</sup> <br/>
@@ -21,7 +20,8 @@ International Conference on Learning Representations (ICLR) 2024 (oral; top 1.2%
 <sup>2</sup>City University of Hong Kong  <br/>
 <sup>3</sup>NVIDIA  <br/>
 Radiological Society of North America (RSNA) 2023  <br/>
-[abstract](document/rsna_abstract.pdf) | [code](https://github.com/MrGiovanni/SuPreM) | [slides](document/rsna_slides.pdf) | talk
+<a href='document/rsna_abstract.pdf'><img src='https://img.shields.io/badge/Abstract-PDF-purple'></a> <a href='document/rsna_slides.pdf'><img src='https://img.shields.io/badge/Slides-PDF-orange'></a>
+
 
 **&#9733; We have maintained a document for [Frequently Asked Questions](document/frequently_asked_questions.md).**
 
@@ -97,7 +97,7 @@ The following is a list of supported model backbones in our collection. Select t
 | name | params | pre-trained data | resources | download |
 |:----  |:----  |:----  |:----  |:----  |
 | [Tang et al.](https://openaccess.thecvf.com/content/CVPR2022/papers/Tang_Self-Supervised_Pre-Training_of_Swin_Transformers_for_3D_Medical_Image_Analysis_CVPR_2022_paper.pdf) | 62.19M | 5050 CT | [![GitHub stars](https://img.shields.io/github/stars/Project-MONAI/research-contributions.svg?logo=github&label=Stars)](https://github.com/Project-MONAI/research-contributions) | [weights](https://huggingface.co/MrGiovanni/SuPreM/resolve/main/self_supervised_nv_swin_unetr_5050.pt?download=true) |
-| [Jose Valanaras et al.](https://arxiv.org/pdf/2307.16896.pdf](https://arxiv.org/pdf/2307.16896.pdf)) | 62.19M | 50000 CT/MRI | [![GitHub stars](https://img.shields.io/github/stars/Project-MONAI/research-contributions.svg?logo=github&label=Stars)](https://github.com/Project-MONAI/research-contributions) | [weights](https://huggingface.co/MrGiovanni/SuPreM/resolve/main/self_supervised_nv_swin_unetr_50000.pth?download=true) |
+| [Jose Valanaras et al.](https://arxiv.org/pdf/2307.16896) | 62.19M | 50000 CT/MRI | [![GitHub stars](https://img.shields.io/github/stars/Project-MONAI/research-contributions.svg?logo=github&label=Stars)](https://github.com/Project-MONAI/research-contributions) | [weights](https://huggingface.co/MrGiovanni/SuPreM/resolve/main/self_supervised_nv_swin_unetr_50000.pth?download=true) |
 | [Universal Model](https://openaccess.thecvf.com/content/ICCV2023/papers/Liu_CLIP-Driven_Universal_Model_for_Organ_Segmentation_and_Tumor_Detection_ICCV_2023_paper.pdf) | 62.19M | 2100 CT | [![GitHub stars](https://img.shields.io/github/stars/ljwztc/CLIP-Driven-Universal-Model.svg?logo=github&label=Stars)](https://github.com/ljwztc/CLIP-Driven-Universal-Model) | [weights](https://huggingface.co/MrGiovanni/SuPreM/resolve/main/supervised_clip_driven_universal_swin_unetr_2100.pth?download=true) |
 | SuPreM | 62.19M | 2100 CT | ours :star2: | [weights](https://huggingface.co/MrGiovanni/SuPreM/resolve/main/supervised_suprem_swinunetr_2100.pth?download=true) |
 
