@@ -55,7 +55,7 @@ def validation(model, ValLoader, args):
             # Iterate over each selected class
             for class_name in selected_class_map.values():
                 # Construct the file path based on the class name and name
-                file_path_pattern = os.path.join(args.dataset_path,"Task05_Prostate", "imagesTs", "prostate_03.nii.gz")
+                file_path_pattern = os.path.join(args.dataset_path,"Task05_Prostate", "imagesTs", name+".nii.gz")
                 # Use glob to find files matching the constructed file path
                 for gt_path in glob.glob(file_path_pattern):
                     # Load the NIfTI file and extract the header information
