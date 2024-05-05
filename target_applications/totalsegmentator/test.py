@@ -55,7 +55,7 @@ def validation(model, ValLoader, args):
             # Iterate over each selected class
             for class_name in selected_class_map.values():
                 # Construct the file path based on the class name and name
-                file_path_pattern = os.path.join(args.dataset_path,"Task05_Prostate", "imagesTs", name+".nii.gz")
+                file_path_pattern = os.path.join(args.dataset_path,"Task05_Prostate", "imagesTr", name+".nii.gz")
                 # Use glob to find files matching the constructed file path
                 for gt_path in glob.glob(file_path_pattern):
                     # Load the NIfTI file and extract the header information
@@ -75,17 +75,48 @@ def validation(model, ValLoader, args):
         val_outputs_list = decollate_batch(val_outputs)
         val_output_convert = [post_pred(val_pred_tensor) for val_pred_tensor in val_outputs_list]
         def postprocess(val):
-            meta=val.meta
-            affine=val.affine
-            applied_operations=val.applied_operations
+            def find_largest_center_crossing_component(image):
+                """
+                Finds the largest connected component that intersects the line parallel to the x-axis through the image center in a 3D image.
+
+                Parameters:
+                    image (numpy.ndarray): The 3D image as a NumPy array.
+
+                Returns:
+                    numpy.ndarray: A 3D array with only the largest component that intersects the center line.
+                """
+                # 确保输入图像是布尔或二进制的，其中物体标记为1或True，背景为0或False
+                image = image > 0
+
+                # 获取所有连通组件的标签
+                labels = cc3d.connected_components(image)
+
+                # 计算中心线
+                center_x = image.shape[0] // 2
+                center_z = image.shape[2] // 2
+
+                # 初始化最大组件的大小和标签
+                max_label = 0
+                max_size = 0
+
+                # 遍历所有组件，找到经过中心线的最大组件
+                for label in range(1, labels.max() + 1):
+                    component = labels == label
+                    # 检查组件是否经过中心线
+                    if np.any(component[ center_x,:, center_z]):
+                        size = np.sum(component)
+                        if size > max_size:
+                            max_size = size
+                            max_label = label
+
+                # 生成只包含最大组件的图像
+                largest_component = (labels == max_label)
+
+                return largest_component
             val=val.cpu().numpy()
             for i in range(val.shape[0]):
-                val[i,:,:,:]=cc3d.largest_k(
-                val[i,:,:,:], k=1, 
-                connectivity=26, delta=0,
-                return_N=False,
-                )
-            return MetaTensor(val,affine=affine,meta=meta,applied_operations=applied_operations)
+                val[i,:,:,:]=find_largest_center_crossing_component(val[i,:,:,:])
+            return torch.tensor(val)
             
         val_output_convert[0]=postprocess(val_output_convert[0])
         for lbl, pred in zip(val_labels_convert, val_output_convert):

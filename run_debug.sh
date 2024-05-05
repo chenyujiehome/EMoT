@@ -2,7 +2,7 @@
 
 cd /home/azureuser/SuPreM/target_applications/totalsegmentator
 datapath=/home/azureuser/prostate_data/ # change to /path/to/your/data/TotalSegmentator
-checkpoint=tang
+checkpoint=sup_unet
 python download_pretrain.py  --checkpoint $checkpoint
 target_task=prostate
 num_target_class=3
