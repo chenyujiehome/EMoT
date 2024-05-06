@@ -149,7 +149,7 @@ def full_make_png(case_name, args,data):
     image =data[case_name[:11]][args.image_channel,:,:,:]
 
     mask = load_individual_maps( case_name)
-
+    
     high_range = torch.max(image)
     image[image > high_range] = high_range
     image[image < low_range] = low_range
