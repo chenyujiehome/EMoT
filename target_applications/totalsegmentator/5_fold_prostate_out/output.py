@@ -1,6 +1,6 @@
 import os 
 import pandas as pd 
-dir="/home/azureuser/SuPreM/target_applications/totalsegmentator/5_fold_prostate_out"
+dir="/home/fanlinghuang/TAD-chenyujie/SuPreM/target_applications/totalsegmentator/5_fold_prostate_out"
 dirs = os.listdir(dir)
 dices=[]
 nsds=[]
@@ -17,6 +17,8 @@ for d in dirs:
                 dice=pd.concat([dice,tmp],axis=0)
             else:
                 nsd=pd.concat([nsd,tmp],axis=0)
+        dice = dice.dropna()
+        nsd = nsd.dropna()
         # Calculate mean and standard deviation, ignoring non-numeric columns
         # Calculate mean and standard deviation, ignoring non-numeric columns
         dice_mean = dice.mean(numeric_only=True)
