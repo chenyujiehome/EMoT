@@ -136,8 +136,12 @@ def process(args):
                         )
         # Load pre-trained weights
         store_dict = model.state_dict()
-        model_dict = torch.load(args.pretrain)['net'] if args.checkpoint in ('sup_swin') else torch.load(args.pretrain)['state_dict']
-        amount = 0
+        model_dict = torch.load(args.pretrain)
+        keys_to_check = ['state_dict', 'net', 'model', 'teacher']
+        for key in keys_to_check:
+            if key in model_dict:
+                model_dict = torch.load(args.pretrain)[key]
+                break
         for key in model_dict.keys():
             if 'out' not in key:
                 if key in store_dict.keys():
@@ -145,7 +149,10 @@ def process(args):
                     amount += 1
                 else:
                     new_key = '.'.join(key.split('.')[1:])
-                    if 'backbone' in new_key:
+                    if new_key in store_dict.keys():
+                        store_dict[new_key] = model_dict[key]   
+                        amount += 1
+                    elif 'backbone' in new_key:
                         n_key = '.'.join(new_key.split('.')[1:])
                         if n_key in store_dict.keys():
                             store_dict[n_key] = model_dict[key]
@@ -161,7 +168,12 @@ def process(args):
     if args.model_backbone == 'unet':
         model = UNet3D(n_class=args.num_class)
         if args.pretrain is not None:
-            model_dict = torch.load(args.pretrain)['net'] if args.checkpoint in ('sup_unet') else torch.load(args.pretrain)['state_dict']
+            model_dict = torch.load(args.pretrain)
+            keys_to_check = ['state_dict', 'net', 'model', 'teacher']
+            for key in keys_to_check:
+                if key in model_dict:
+                    model_dict = torch.load(args.pretrain)[key]
+                    break
             store_dict = model.state_dict()
             amount = 0
             for key in model_dict.keys():
