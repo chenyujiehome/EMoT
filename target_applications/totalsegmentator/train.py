@@ -142,6 +142,7 @@ def process(args):
             if key in model_dict:
                 model_dict = torch.load(args.pretrain)[key]
                 break
+        amount=0
         for key in model_dict.keys():
             if 'out' not in key:
                 if key in store_dict.keys():
