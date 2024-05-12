@@ -179,7 +179,7 @@ def process(args):
                     blocks_down=[1, 2, 2, 4],
                     blocks_up=[1, 1, 1],
                     init_filters=16,
-                    in_channels=1,
+                    in_channels=2,
                     out_channels=args.num_class,
                     dropout_prob=0.0,
                     )
