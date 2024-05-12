@@ -6,7 +6,7 @@ import argparse
 def main(args):
     file_name=pre_dict[args.checkpoint]
     url = f"https://huggingface.co/jethro682/pretrain_mri/resolve/main/{file_name}?download=true"
-    file_path = "pretrained_weights/"+file_name  # 替换为你的目标文件夹路径
+    file_path = args.save_path+file_name  # 替换为你的目标文件夹路径
 
     # 检查文件是否已经存在
     if not os.path.exists(file_path):
@@ -23,5 +23,6 @@ def main(args):
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('--checkpoint', default='tang', help='The path resume from checkpoint')
+    parser.add_argument('--save_path', default='pretrained_weights/', help='The path resume from checkpoint')
     args = parser.parse_args()
     main(args)

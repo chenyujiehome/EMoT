@@ -4,7 +4,7 @@
 
 # Ignore out/ directories
 out/
-
+nohup.out
 # Ignore Python cache
 __pycache__/
 *.py[cod]
@@ -14,3 +14,4 @@ gifs/
 materials/
 videos/
 cufile.log
+file_keys_dict.json
