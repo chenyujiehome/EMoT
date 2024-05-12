@@ -202,7 +202,7 @@ def process(args):
                     blocks_down=[1, 2, 2, 4],
                     blocks_up=[1, 1, 1],
                     init_filters=16,
-                    in_channels=1,
+                    in_channels=2,
                     out_channels=args.num_class,
                     dropout_prob=0.0,
                     )
@@ -215,12 +215,15 @@ def process(args):
                 if new_key in store_dict.keys() and 'conv_final.2.conv' not in new_key:
                     store_dict[new_key] = model_dict[key]   
                     amount += 1
+            repeat_keys=["convInit.conv.weight"]
+            for  key in repeat_keys:
+                store_dict[key] = torch.repeat_interleave(store_dict[key],repeats=2, dim=1)
             model.load_state_dict(store_dict)
             print(amount, len(store_dict.keys()))
             print('Use SuPreM SegResNet backbone pretrained weights')
         else:
             print('This is SegResNet training from scratch')
-            
+        
     model.to(args.device)
     model.train()
     
