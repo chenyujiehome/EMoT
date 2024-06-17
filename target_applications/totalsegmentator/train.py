@@ -208,19 +208,15 @@ def process(args):
                         )
         # Load pre-trained weights
         store_dict = model.state_dict()
-        model_dict = torch.load(args.pretrain)['net'] if args.checkpoint in ('sup_swin') else torch.load(args.pretrain)['state_dict']
+        model_dict = torch.load(args.pretrain)['net']
         amount = 0
         for key in model_dict.keys():
-            if key in store_dict.keys():
-                store_dict[key] = model_dict[key]
-                amount += 1
-            else:
-                new_key = '.'.join(key.split('.')[1:])
-                if 'backbone' in new_key:
-                    n_key = '.'.join(new_key.split('.')[1:])
-                    if n_key in store_dict.keys():
-                        store_dict[n_key] = model_dict[key]
-                        amount += 1
+            new_key = '.'.join(key.split('.')[1:])
+            if 'backbone' in new_key:
+                n_key = '.'.join(new_key.split('.')[1:])
+                if n_key in store_dict.keys():
+                    store_dict[n_key] = model_dict[key]
+                    amount += 1
         print(amount, len(model_dict.keys()))
         model.load_state_dict(store_dict)
         print('Use SuPreM SwinUnetr backbone pretrained weights')
@@ -229,19 +225,14 @@ def process(args):
     if args.model_backbone == 'unet':
         model = UNet3D(n_class=args.num_class)
         if args.pretrain is not None:
-            model_dict = torch.load(args.pretrain)['net'] if args.checkpoint in ('sup_unet') else torch.load(args.pretrain)['state_dict']
+            model_dict = torch.load(args.pretrain)['net']
             store_dict = model.state_dict()
             amount = 0
             for key in model_dict.keys():
-                new_key = '.'.join(key.split('.')[1:])
+                new_key = '.'.join(key.split('.')[2:])
                 if new_key in store_dict.keys():
                     store_dict[new_key] = model_dict[key]   
                     amount += 1
-                else:
-                    new_key = '.'.join(key.split('.')[2:])
-                    if new_key in store_dict.keys():
-                        store_dict[new_key] = model_dict[key]   
-                        amount += 1
 
             model.load_state_dict(store_dict)
             print(amount, len(store_dict.keys()))
@@ -405,26 +396,9 @@ def main():
     parser.add_argument('--dataset_path', default='...', help='dataset path')
     parser.add_argument('--model_backbone', default='unet', help='model backbone, also avaliable for swinunetr')
     parser.add_argument('--percent', default=1081, type=int, help='percent of training data')
-    parser.add_argument('--checkpoint', default='sup_swin', help='pretrain checkpoint name') 
 
     args = parser.parse_args()
-    assert args.checkpoint in ['tang', 'jose', 'univ_swin', 'sup_swin', 'genesis', 'unimiss_tiny', 'unimiss_small', 'med3d', 'dodnet', 'univ_unet', 'sup_unet', 'sup_seg', 'voco']
-    pre_dict={'tang':'self_supervised_nv_swin_unetr_5050.pt',
-              "jose":'self_supervised_nv_swin_unetr_50000.pth',
-              "univ_swin":'supervised_clip_driven_universal_swin_unetr_2100.pth',
-             'sup_swin':'supervised_suprem_swinunetr_2100.pth',
-             'genesis':'self_supervised_models_genesis_unet_620.pt', 
-             "unimiss_tiny":'self_supervised_unimiss_nnunet_tiny_5022.pth',
-             "unimiss_small":'self_supervised_unimiss_nnunet_small_5022.pth',
-             "med3d":'supervised_med3D_residual_unet_1623.pth',
-             "dodnet":'supervised_dodnet_unet_920.pth',
-             "univ_unet":'supervised_clip_driven_universal_unet_2100.pth',
-             "sup_unet":'supervised_suprem_unet_2100.pth',
-             "sup_seg":'supervised_suprem_segresnet_2100.pth',
-             "voco":"VoCo_10k.pt",
-             }
-    if args.pretrain is  None:
-        args.pretrain = "pretrained_weights/"+pre_dict[args.checkpoint]
+    
     process(args=args)
 
 if __name__ == "__main__":
