@@ -78,8 +78,8 @@ for arch in unet segresnet; do
 for fold in {1..5}
 do
 datapath=/path/to/your/data/TotalSegmentator/ # change to /path/to/your/data/TotalSegmentator
-checkpoint_path=out/efficiency.$arch.$target_task.fold$fold/best_model.pth
 target_task=cardiac
+checkpoint_path=out/efficiency.$arch.$target_task.fold$fold/best_model.pth
 num_target_class=19
 
 
@@ -117,8 +117,8 @@ for arch in unet segresnet; do
 for fold in {1..5}
 do
 datapath=/path/to/your/data/TotalSegmentator/ # change to /path/to/your/data/TotalSegmentator
-checkpoint_path=out/efficiency.$arch.$target_task.scratch.fold$fold/best_model.pth
 target_task=cardiac
+checkpoint_path=out/efficiency.$arch.$target_task.scratch.fold$fold/best_model.pth
 num_target_class=19
 
 
@@ -130,7 +130,33 @@ done
 
 ##### 8. Organize the  result
 ```bash
+cd target_applications/totalsegmentator/
+mkdir model #save checkpoints
+mkdir result #save csv file
 
+#move best_model.pth to model folder
+source_folder="out"
+target_folder="model"
+for subdir in "$source_folder"/*; do
+  if [ -d "$subdir" ]; then 
+    subdir_name=$(basename "$subdir")
+    best_model_path="$subdir/best_model.pth"
+    if [ -f "$best_model_path" ]; then 
+      mv "$best_model_path" "$target_folder/${subdir_name}.pth"
+    fi
+  fi
+done
+
+target_folder="result"
+
+# move csv file to result folder
+for subdir in "$source_folder"/*; do
+  if [ -d "$subdir" ]; then 
+    subdir_name=$(basename "$subdir")
+    mkdir -p "$target_folder/$subdir_name"
+    find "$subdir" -maxdepth 1 -type f -name "*.csv" -exec mv {} "$target_folder/$subdir_name/" \;
+  fi
+done
 
 
 
