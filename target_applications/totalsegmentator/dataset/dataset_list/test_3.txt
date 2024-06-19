@@ -1,0 +1,235 @@
+s1366	ct polytrauma
+s0189	ct aortic valve
+s0329	ct abdomen-pelvis
+s0328	ct abdomen-pelvis
+s0321	ct neck-thorax-abdomen-pelvis
+s0295	ct spine
+s0316	ct  intervention 
+s0271	ct angiography thorax
+s0308	ct angiography abdomen-pelvis-leg
+s0287	ct angiography neck-thx-abd-pelvis-leg
+s0288	ct spine
+s0260	ct neck-thorax-abdomen-pelvis
+s0259	ct neck
+s0255	ct abdomen-pelvis
+s0252	ct abdomen-pelvis
+s0221	ct spine
+s0242	ct abdomen-pelvis
+s0230	ct heart-thorakale aorta
+s0234	ct spine
+s0224	ct polytrauma
+s1406	ct gesichtshead
+s0191	ct spine
+s0209	ct spine
+s0201	ct abdomen-pelvis
+s0108	ct neck-thorax-abdomen-pelvis
+s0161	ct abdomen-pelvis
+s0149	ct spine
+s0153	ct abdomen-pelvis
+s0166	ct abdomen-pelvis
+s0160	ct abdomen-pelvis
+s0159	ct  operation
+s0136	ct spine
+s0132	ct abdomen-pelvis
+s0130	ct spine
+s0119	ct abdomen-pelvis
+s0112	ct neck
+s0115	ct angiography thorax
+s0114	ct thorax-neck
+s0110	ct thorax-neck
+s0107	ct abdomen-pelvis
+s0100	ct spine
+s0096	ct angiography abdomen-pelvis-leg
+s0083	ct coronary arteries
+s0078	ct abdomen-pelvis
+s0066	ct abdomen-pelvis
+s0062	ct pelvis
+s0052	ct abdomen-pelvis
+s0044	ct neck
+s0031	ct angiography abdomen-pelvis-leg
+s0024	ct thorax-abdomen
+s0006	ct abdomen-pelvis
+s0046	ct thorax-neck
+s0102	ct thorax-abdomen
+s0657	ct neck-thorax-abdomen-pelvis
+s0753	ct thorax-neck
+s0670	ct neck-thorax-abdomen-pelvis
+s0748	ct angiography head
+s0746	ct abdomen
+s0731	ct thorax-abdomen-pelvis
+s0736	ct angiography neck-thx-abd-pelvis-leg
+s0708	ct neck-thorax-abdomen-pelvis
+s0715	ct  intervention 
+s0707	ct angiography neck-thx-abd-pelvis-leg
+s0684	ct heart
+s1359	ct hip right
+s0474	ct angiography head
+s0667	ct neck-thorax-abdomen-pelvis
+s0681	ct heart-thorakale aorta
+s0673	ct pelvis
+s0661	ct neck-thorax-abdomen-pelvis
+s0656	ct thorax-abdomen-pelvis
+s0617	ct thorax-abdomen-pelvis
+s0682	ct thorax-abdomen
+s0602	ct thorax-abdomen-pelvis
+s0636	ct thorax-abdomen
+s0426	ct pelvis
+s0632	ct thorax-neck
+s0604	ct thorax-neck
+s0552	ct neck
+s0611	ct pelvis
+s0587	ct neck-thorax-abdomen-pelvis
+s0571	ct thorax-abdomen-pelvis
+s0577	ct thorax-abdomen-pelvis
+s0579	ct spine
+s0615	ct thorax-abdomen
+s0749	ct abdomen
+s0564	ct pelvis
+s0583	ct thorax-abdomen
+s0590	ct abdomen
+s0532	ct heart
+s0560	ct abdomen
+s0542	ct thorax-abdomen
+s0527	ct angiography neck
+s0522	ct thorax
+s0548	ct neck-thorax-abdomen-pelvis
+s0510	ct neck-thorax-abdomen-pelvis
+s0658	ct thorax-abdomen
+s1355	ct angiography abdomen-pelvis
+s0513	ct abdomen
+s0483	ct thorax-abdomen-pelvis
+s0463	ct heart-thorakale aorta
+s0477	ct neck-thorax-abdomen-pelvis
+s0482	ct spine
+s0475	ct pelvis
+s0465	ct heart
+s0469	ct thorax-chest
+s0467	ct angiography neck-thx-abd-pelvis-leg
+s0452	ct aortic valve
+s0462	ct spine
+s0471	ct abdomen
+s0459	ct thorax-neck
+s0441	ct abdomen
+s0439	ct heart-thorakale aorta
+s0500	ct neck-thorax-abdomen-pelvis
+s0429	ct thorax-abdomen-pelvis
+s0647	ct abdomen
+s0418	ct pelvis
+s0431	ct angiography neck-thx-abd-pelvis-leg
+s0410	ct angiography head
+s0383	ct thorax-abdomen-pelvis
+s0478	ct angiography head
+s0374	ct heart-thorakale aorta
+s0394	ct thorax-abdomen
+s0392	ct thorax-chest
+s0378	ct thorax-neck
+s0373	ct thorax-neck
+s0368	ct heart
+s0361	ct angiography pelvis-leg
+s0345	ct spine
+s0332	ct thorax-abdomen-pelvis
+s0336	ct angiography neck-thx-abd-pelvis-leg
+s0342	ct abdomen
+s0401	ct thorax-abdomen
+s0518	ct neck
+s0437	ct thorax-abdomen
+s0679	ct abdomen
+s1077	ct angiography neck-thx-abd-pelvis-leg
+s1362	ct angiography thorax-abdomen-pelvis
+s0825	ct heart-thorakale aorta
+s1247	ct neck-thorax-abdomen-pelvis
+s1201	ct angiography thorax
+s1332	ct aortic valve
+s1343	ct thorax-neck
+s1339	ct abdomen
+s1315	ct  intervention 
+s1329	ct thorax-abdomen
+s1301	ct pelvis
+s1331	ct abdomen
+s1296	ct thorax-chest
+s1268	ct thorax-abdomen-pelvis
+s1155	ct thorax-abdomen-pelvis
+s1288	ct chest
+s1289	ct spine
+s1280	ct left artrium
+s1255	ct neck-thorax-abdomen-pelvis
+s1258	ct left artrium
+s1236	ct  intervention 
+s1251	ct angiography pelvis-leg
+s1242	ct neck-thorax-abdomen-pelvis
+s1239	ct left artrium
+s1230	ct aortic valve
+s1224	ct thorax-abdomen-pelvis
+s1221	ct thorax
+s1207	ct thorax-abdomen-pelvis
+s1205	ct abdomen 
+s1190	ct heart-thorakale aorta
+s1162	ct thorax-chest
+s1175	ct  intervention 
+s1174	ct thorax-abdomen-pelvis
+s1157	ct thorax
+s1158	ct thorax-neck
+s1156	ct upper leg left
+s1391	ct angiography abdomen-pelvis
+s1151	ct angiography pelvis-leg
+s1148	ct angiography head
+s1149	ct abdomen 
+s1387	ct angiography thorax-abdomen-pelvis
+s1105	ct aortic valve
+s1124	ct polytrauma
+s1120	ct thorax-abdomen-pelvis
+s1102	ct thorax-chest
+s1060	ct thorax-neck
+s0796	ct neck-thorax-abdomen-pelvis
+s1001	ct neck
+s1419	ct head
+s1070	ct thorax-abdomen-pelvis
+s1069	ct thorax-abdomen-pelvis
+s1062	ct angiography neck-thx-abd-pelvis-leg
+s1067	ct thorax-neck
+s1042	ct thorax
+s1040	ct angiography head
+s1021	ct left artrium
+s1028	ct thorax-chest
+s1023	ct thorax-neck
+s0961	ct thorax-abdomen-pelvis
+s0976	ct thorax-abdomen-pelvis
+s0981	ct pelvis
+s1372	ct angiography thorax-abdomen-pelvis
+s0945	ct thorax-abdomen-pelvis
+s0954	ct heart-thorakale aorta
+s0946	ct heart-thorakale aorta
+s0933	ct polytrauma
+s0916	ct thorax-abdomen-pelvis
+s0931	ct angiography neck-thx-abd-pelvis-leg
+s0924	ct neck-thorax-abdomen-pelvis
+s0911	ct left artrium
+s0771	ct thorax-neck
+s0907	ct pelvis
+s0897	ct thorax-neck
+s0863	ct neck-thorax-abdomen-pelvis
+s0878	ct neck-thorax-abdomen-pelvis
+s0853	ct neck
+s0861	ct  operation
+s0860	ct polytrauma
+s0851	ct thorax-neck
+s0849	ct angiography head
+s0845	ct thorax-neck
+s0836	ct thorax-abdomen-pelvis
+s0767	ct heart
+s0820	ct angiography head
+s0813	ct heart-thorakale aorta
+s0819	ct pelvis
+s0815	ct pelvis
+s0810	ct thorax-neck
+s0795	ct thorax-abdomen-pelvis
+s0806	ct neck-thorax-abdomen-pelvis
+s0804	ct angiography neck-thx-abd-pelvis-leg
+s0797	ct neck-thorax-abdomen-pelvis
+s0787	ct left artrium
+s1420	ct thorax-abdomen-pelvis
+s0766	ct angiography head
+s0759	ct neck-thorax-abdomen-pelvis
+s0754	ct polytrauma
+s1424	ct thorax-abdomen-pelvis
+s1429	nan

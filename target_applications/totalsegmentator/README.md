@@ -33,6 +33,8 @@ pip install -r requirements.txt
 ```bash
 cd target_applications/totalsegmentator/pretrained_weights/
 wget https://huggingface.co/MrGiovanni/SuPreM/resolve/main/supervised_suprem_unet_2100.pth
+wget https://huggingface.co/MrGiovanni/SuPreM/resolve/main/supervised_suprem_segresnet_2100.pth
+
 cd ../../../
 ```
 
@@ -49,12 +51,13 @@ cd target_applications/totalsegmentator/
 RANDOM_PORT=$((RANDOM % 64512 + 1024))
 datapath=/path/to/your/data/TotalSegmentator/ # change to /path/to/your/data/TotalSegmentator
 arch=unet # support swinunetr, unet, and segresnet
-suprem_path=pretrained_weights/supervised_suprem_swinunetr_2100.pth
-target_task=vertebrae
-num_target_class=25
-num_target_annotation=64
-
-python -W ignore -m torch.distributed.launch --nproc_per_node=1 --master_port=$RANDOM_PORT train.py --dist  --model_backbone $arch --log_name efficiency.$arch.$target_task.number$num_target_annotation --map_type $target_task --num_class $num_target_class --dataset_path $datapath --num_workers 8 --batch_size 2 --pretrain $suprem_path --percent $num_target_annotation
+suprem_path=pretrained_weights/supervised_suprem_unet_2100.pth
+target_task=cardiac
+num_target_class=19
+for fold in {1..5}
+do
+python -W ignore -m torch.distributed.launch --nproc_per_node=1 --master_port=$RANDOM_PORT train.py --dist  --model_backbone $arch --log_name efficiency.$arch.$target_task.fold$fold --map_type $target_task --num_class $num_target_class --dataset_path $datapath --num_workers 8 --batch_size 2 --pretrain $suprem_path --percent $fold
+done
 ```
 
 ##### 5. Evaluate the performance per class
@@ -63,13 +66,138 @@ python -W ignore -m torch.distributed.launch --nproc_per_node=1 --master_port=$R
 # Single GPU
 
 cd target_applications/totalsegmentator/
+
 RANDOM_PORT=$((RANDOM % 64512 + 1024))
 arch=unet # support swinunetr, unet, and segresnet
 datapath=/path/to/your/data/TotalSegmentator/ # change to /path/to/your/data/TotalSegmentator
-checkpoint_path=out/efficiency.$arch.$target_task.number$num_target_annotation/best_model.pth
-target_task=vertebrae
-num_target_class=25
-num_target_annotation=64
+checkpoint_path=out/efficiency.$arch.$target_task.number$fold/best_model.pth
+target_task=cardiac
+num_target_class=19
 
-python -W ignore -m torch.distributed.launch --nproc_per_node=1 --master_port=$RANDOM_PORT test.py --dist  --model_backbone $arch --log_name efficiency.$arch.$target_task.number$num_target_annotation --map_type $target_task --num_class $num_target_class --dataset_path $datapath --num_workers 8 --batch_size 2 --pretrain $checkpoint_path --train_type efficiency 
+for fold in {1..5}
+do
+python -W ignore -m torch.distributed.launch --nproc_per_node=1 --master_port=$RANDOM_PORT test.py --dist  --model_backbone $arch --log_name efficiency.$arch.$target_task.fold$fold --map_type $target_task --num_class $num_target_class --dataset_path $datapath --num_workers 8 --batch_size 2 --pretrain $checkpoint_path --train_type efficiency 
+done
+```
+
+##### 6. Fine-tune the pre-trained Swin UNETR on TotalSegmentator
+
+```bash
+# Single GPU
+
+cd target_applications/totalsegmentator/
+RANDOM_PORT=$((RANDOM % 64512 + 1024))
+datapath=/path/to/your/data/TotalSegmentator/ # change to /path/to/your/data/TotalSegmentator
+arch=unet # support swinunetr, unet, and segresnet
+suprem_path=pretrained_weights/supervised_suprem_unet_2100.pth
+target_task=cardiac
+num_target_class=19
+for fold in {1..5}
+do
+python -W ignore -m torch.distributed.launch --nproc_per_node=1 --master_port=$RANDOM_PORT train.py --dist  --model_backbone $arch --log_name efficiency.$arch.$target_task.fold$fold --map_type $target_task --num_class $num_target_class --dataset_path $datapath --num_workers 8 --batch_size 2  --percent $fold
+done
+```
+
+##### 7. Evaluate the performance per class
+
+```bash
+# Single GPU
+
+cd target_applications/totalsegmentator/
+
+RANDOM_PORT=$((RANDOM % 64512 + 1024))
+arch=unet # support swinunetr, unet, and segresnet
+datapath=/path/to/your/data/TotalSegmentator/ # change to /path/to/your/data/TotalSegmentator
+checkpoint_path=out/efficiency.$arch.$target_task.number$fold/best_model.pth
+target_task=cardiac
+num_target_class=19
+
+for fold in {1..5}
+do
+python -W ignore -m torch.distributed.launch --nproc_per_node=1 --master_port=$RANDOM_PORT test.py --dist  --model_backbone $arch --log_name efficiency.$arch.$target_task.fold$fold --map_type $target_task --num_class $num_target_class --dataset_path $datapath --num_workers 8 --batch_size 2 --pretrain $checkpoint_path --train_type efficiency 
+done
+```
+
+##### 8. Fine-tune the pre-trained Swin UNETR on TotalSegmentator
+
+```bash
+# Single GPU
+
+cd target_applications/totalsegmentator/
+RANDOM_PORT=$((RANDOM % 64512 + 1024))
+datapath=/path/to/your/data/TotalSegmentator/ # change to /path/to/your/data/TotalSegmentator
+arch=segresnet # support swinunetr, unet, and segresnet
+suprem_path=pretrained_weights/supervised_suprem_segresnet_2100.pth
+target_task=cardiac
+num_target_class=19
+for fold in {1..5}
+do
+python -W ignore -m torch.distributed.launch --nproc_per_node=1 --master_port=$RANDOM_PORT train.py --dist  --model_backbone $arch --log_name efficiency.$arch.$target_task.fold$fold --map_type $target_task --num_class $num_target_class --dataset_path $datapath --num_workers 8 --batch_size 2 --pretrain $suprem_path --percent $fold
+done
+```
+
+##### 9. Evaluate the performance per class
+
+```bash
+# Single GPU
+
+cd target_applications/totalsegmentator/
+
+RANDOM_PORT=$((RANDOM % 64512 + 1024))
+arch=segresnet # support swinunetr, unet, and segresnet
+datapath=/path/to/your/data/TotalSegmentator/ # change to /path/to/your/data/TotalSegmentator
+checkpoint_path=out/efficiency.$arch.$target_task.number$fold/best_model.pth
+target_task=cardiac
+num_target_class=19
+
+for fold in {1..5}
+do
+python -W ignore -m torch.distributed.launch --nproc_per_node=1 --master_port=$RANDOM_PORT test.py --dist  --model_backbone $arch --log_name efficiency.$arch.$target_task.fold$fold --map_type $target_task --num_class $num_target_class --dataset_path $datapath --num_workers 8 --batch_size 2 --pretrain $checkpoint_path --train_type efficiency 
+done
+```
+
+##### 10. Fine-tune the pre-trained Swin UNETR on TotalSegmentator
+
+```bash
+# Single GPU
+
+cd target_applications/totalsegmentator/
+RANDOM_PORT=$((RANDOM % 64512 + 1024))
+datapath=/path/to/your/data/TotalSegmentator/ # change to /path/to/your/data/TotalSegmentator
+arch=segresnet # support swinunetr, unet, and segresnet
+suprem_path=pretrained_weights/supervised_suprem_segresnet_2100.pth
+target_task=cardiac
+num_target_class=19
+for fold in {1..5}
+do
+python -W ignore -m torch.distributed.launch --nproc_per_node=1 --master_port=$RANDOM_PORT train.py --dist  --model_backbone $arch --log_name efficiency.$arch.$target_task.fold$fold --map_type $target_task --num_class $num_target_class --dataset_path $datapath --num_workers 8 --batch_size 2  --percent $fold
+done
+```
+
+##### 11. Evaluate the performance per class
+
+```bash
+# Single GPU
+
+cd target_applications/totalsegmentator/
+
+RANDOM_PORT=$((RANDOM % 64512 + 1024))
+arch=segresnet # support swinunetr, unet, and segresnet
+datapath=/path/to/your/data/TotalSegmentator/ # change to /path/to/your/data/TotalSegmentator
+checkpoint_path=out/efficiency.$arch.$target_task.number$fold/best_model.pth
+target_task=cardiac
+num_target_class=19
+
+for fold in {1..5}
+do
+python -W ignore -m torch.distributed.launch --nproc_per_node=1 --master_port=$RANDOM_PORT test.py --dist  --model_backbone $arch --log_name efficiency.$arch.$target_task.fold$fold --map_type $target_task --num_class $num_target_class --dataset_path $datapath --num_workers 8 --batch_size 2 --pretrain $checkpoint_path --train_type efficiency 
+done
+```
+##### 12. Organize the  result
+```bash
+
+
+
+
+
 ```
