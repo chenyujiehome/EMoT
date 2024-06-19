@@ -50,13 +50,19 @@ from [Zenodo](https://doi.org/10.5281/zenodo.6802613) (1,228 subjects) and save 
 cd target_applications/totalsegmentator/
 RANDOM_PORT=$((RANDOM % 64512 + 1024))
 datapath=/path/to/your/data/TotalSegmentator/ # change to /path/to/your/data/TotalSegmentator
-arch=unet # support swinunetr, unet, and segresnet
-suprem_path=pretrained_weights/supervised_suprem_unet_2100.pth
 target_task=cardiac
 num_target_class=19
-for fold in {1..5}
-do
-python -W ignore -m torch.distributed.launch --nproc_per_node=1 --master_port=$RANDOM_PORT train.py --dist  --model_backbone $arch --log_name efficiency.$arch.$target_task.fold$fold --map_type $target_task --num_class $num_target_class --dataset_path $datapath --num_workers 8 --batch_size 2 --pretrain $suprem_path --percent $fold
+for arch in unet segresnet; do
+    if [ "$arch" = "unet" ]; then
+        suprem_path=pretrained_weights/supervised_suprem_unet_2100.pth
+    elif [ "$arch" = "segresnet" ]; then
+        suprem_path=pretrained_weights/supervised_suprem_segresnet_2100.pth
+    fi
+
+    for fold in {1..5}; do
+        RANDOM_PORT=$((RANDOM % 64512 + 1024))
+        python -W ignore -m torch.distributed.launch --nproc_per_node=1 --master_port=$RANDOM_PORT train.py --dist  --model_backbone $arch --log_name efficiency.$arch.$target_task.fold$fold --map_type $target_task --num_class $num_target_class --dataset_path $datapath --num_workers 8 --batch_size 2 --pretrain $suprem_path --percent $fold
+    done
 done
 ```
 
@@ -66,17 +72,19 @@ done
 # Single GPU
 
 cd target_applications/totalsegmentator/
-
 RANDOM_PORT=$((RANDOM % 64512 + 1024))
-arch=unet # support swinunetr, unet, and segresnet
+
+for arch in unet segresnet; do
+for fold in {1..5}
+do
 datapath=/path/to/your/data/TotalSegmentator/ # change to /path/to/your/data/TotalSegmentator
-checkpoint_path=out/efficiency.$arch.$target_task.number$fold/best_model.pth
+checkpoint_path=out/efficiency.$arch.$target_task.fold$fold/best_model.pth
 target_task=cardiac
 num_target_class=19
 
-for fold in {1..5}
-do
-python -W ignore -m torch.distributed.launch --nproc_per_node=1 --master_port=$RANDOM_PORT test.py --dist  --model_backbone $arch --log_name efficiency.$arch.$target_task.fold$fold --map_type $target_task --num_class $num_target_class --dataset_path $datapath --num_workers 8 --batch_size 2 --pretrain $checkpoint_path --train_type efficiency 
+
+python -W ignore -m torch.distributed.launch --nproc_per_node=1 --master_port=$RANDOM_PORT test.py --dist  --model_backbone $arch --log_name efficiency.$arch.$target_task.fold$fold --map_type $target_task --num_class $num_target_class --dataset_path $datapath --num_workers 8 --batch_size 2 --pretrain $checkpoint_path --train_type efficiency --percent $fold
+done
 done
 ```
 
@@ -88,13 +96,13 @@ done
 cd target_applications/totalsegmentator/
 RANDOM_PORT=$((RANDOM % 64512 + 1024))
 datapath=/path/to/your/data/TotalSegmentator/ # change to /path/to/your/data/TotalSegmentator
-arch=unet # support swinunetr, unet, and segresnet
-suprem_path=pretrained_weights/supervised_suprem_unet_2100.pth
+for arch in unet segresnet; do
 target_task=cardiac
 num_target_class=19
 for fold in {1..5}
 do
-python -W ignore -m torch.distributed.launch --nproc_per_node=1 --master_port=$RANDOM_PORT train.py --dist  --model_backbone $arch --log_name efficiency.$arch.$target_task.fold$fold --map_type $target_task --num_class $num_target_class --dataset_path $datapath --num_workers 8 --batch_size 2  --percent $fold
+python -W ignore -m torch.distributed.launch --nproc_per_node=1 --master_port=$RANDOM_PORT train.py --dist  --model_backbone $arch --log_name efficiency.$arch.$target_task.scratch.fold$fold --map_type $target_task --num_class $num_target_class --dataset_path $datapath --num_workers 8 --batch_size 2  --percent $fold
+done
 done
 ```
 
@@ -104,96 +112,23 @@ done
 # Single GPU
 
 cd target_applications/totalsegmentator/
-
 RANDOM_PORT=$((RANDOM % 64512 + 1024))
-arch=unet # support swinunetr, unet, and segresnet
+for arch in unet segresnet; do
+for fold in {1..5}
+do
 datapath=/path/to/your/data/TotalSegmentator/ # change to /path/to/your/data/TotalSegmentator
-checkpoint_path=out/efficiency.$arch.$target_task.number$fold/best_model.pth
+checkpoint_path=out/efficiency.$arch.$target_task.scratch.fold$fold/best_model.pth
 target_task=cardiac
 num_target_class=19
 
-for fold in {1..5}
-do
-python -W ignore -m torch.distributed.launch --nproc_per_node=1 --master_port=$RANDOM_PORT test.py --dist  --model_backbone $arch --log_name efficiency.$arch.$target_task.fold$fold --map_type $target_task --num_class $num_target_class --dataset_path $datapath --num_workers 8 --batch_size 2 --pretrain $checkpoint_path --train_type efficiency 
+
+python -W ignore -m torch.distributed.launch --nproc_per_node=1 --master_port=$RANDOM_PORT test.py --dist  --model_backbone $arch --log_name efficiency.$arch.$target_task.scratch.fold$fold --map_type $target_task --num_class $num_target_class --dataset_path $datapath --num_workers 8 --batch_size 2 --pretrain $checkpoint_path --train_type efficiency --percent fold
+done
 done
 ```
 
-##### 8. Fine-tune the pre-trained Swin UNETR on TotalSegmentator
 
-```bash
-# Single GPU
-
-cd target_applications/totalsegmentator/
-RANDOM_PORT=$((RANDOM % 64512 + 1024))
-datapath=/path/to/your/data/TotalSegmentator/ # change to /path/to/your/data/TotalSegmentator
-arch=segresnet # support swinunetr, unet, and segresnet
-suprem_path=pretrained_weights/supervised_suprem_segresnet_2100.pth
-target_task=cardiac
-num_target_class=19
-for fold in {1..5}
-do
-python -W ignore -m torch.distributed.launch --nproc_per_node=1 --master_port=$RANDOM_PORT train.py --dist  --model_backbone $arch --log_name efficiency.$arch.$target_task.fold$fold --map_type $target_task --num_class $num_target_class --dataset_path $datapath --num_workers 8 --batch_size 2 --pretrain $suprem_path --percent $fold
-done
-```
-
-##### 9. Evaluate the performance per class
-
-```bash
-# Single GPU
-
-cd target_applications/totalsegmentator/
-
-RANDOM_PORT=$((RANDOM % 64512 + 1024))
-arch=segresnet # support swinunetr, unet, and segresnet
-datapath=/path/to/your/data/TotalSegmentator/ # change to /path/to/your/data/TotalSegmentator
-checkpoint_path=out/efficiency.$arch.$target_task.number$fold/best_model.pth
-target_task=cardiac
-num_target_class=19
-
-for fold in {1..5}
-do
-python -W ignore -m torch.distributed.launch --nproc_per_node=1 --master_port=$RANDOM_PORT test.py --dist  --model_backbone $arch --log_name efficiency.$arch.$target_task.fold$fold --map_type $target_task --num_class $num_target_class --dataset_path $datapath --num_workers 8 --batch_size 2 --pretrain $checkpoint_path --train_type efficiency 
-done
-```
-
-##### 10. Fine-tune the pre-trained Swin UNETR on TotalSegmentator
-
-```bash
-# Single GPU
-
-cd target_applications/totalsegmentator/
-RANDOM_PORT=$((RANDOM % 64512 + 1024))
-datapath=/path/to/your/data/TotalSegmentator/ # change to /path/to/your/data/TotalSegmentator
-arch=segresnet # support swinunetr, unet, and segresnet
-suprem_path=pretrained_weights/supervised_suprem_segresnet_2100.pth
-target_task=cardiac
-num_target_class=19
-for fold in {1..5}
-do
-python -W ignore -m torch.distributed.launch --nproc_per_node=1 --master_port=$RANDOM_PORT train.py --dist  --model_backbone $arch --log_name efficiency.$arch.$target_task.fold$fold --map_type $target_task --num_class $num_target_class --dataset_path $datapath --num_workers 8 --batch_size 2  --percent $fold
-done
-```
-
-##### 11. Evaluate the performance per class
-
-```bash
-# Single GPU
-
-cd target_applications/totalsegmentator/
-
-RANDOM_PORT=$((RANDOM % 64512 + 1024))
-arch=segresnet # support swinunetr, unet, and segresnet
-datapath=/path/to/your/data/TotalSegmentator/ # change to /path/to/your/data/TotalSegmentator
-checkpoint_path=out/efficiency.$arch.$target_task.number$fold/best_model.pth
-target_task=cardiac
-num_target_class=19
-
-for fold in {1..5}
-do
-python -W ignore -m torch.distributed.launch --nproc_per_node=1 --master_port=$RANDOM_PORT test.py --dist  --model_backbone $arch --log_name efficiency.$arch.$target_task.fold$fold --map_type $target_task --num_class $num_target_class --dataset_path $datapath --num_workers 8 --batch_size 2 --pretrain $checkpoint_path --train_type efficiency 
-done
-```
-##### 12. Organize the  result
+##### 8. Organize the  result
 ```bash
 
 
