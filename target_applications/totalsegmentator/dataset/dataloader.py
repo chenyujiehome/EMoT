@@ -345,7 +345,7 @@ def get_loader(args):
     train_name = []
 
     for item in args.dataset_list:
-        train_txt_path = os.path.join(args.data_txt_path, 'train_' + str(args.percent) + '.txt')
+        train_txt_path = os.path.join(args.data_txt_path, 'train_' + str(args.fold) + '.txt')
         for line in open(train_txt_path):
             name = line.strip().split('\t')[0]
             train_img_path = os.path.join(args.dataset_path, name, 'ct.nii.gz')
@@ -378,7 +378,7 @@ def get_loader(args):
     test_lbl = []
     test_name = []
     for item in args.dataset_list:
-        test_txt_path = os.path.join(args.data_txt_path, f'test_{str(args.percent)}.txt')
+        test_txt_path = os.path.join(args.data_txt_path, f'test_{str(args.fold)}.txt')
         for line in open(test_txt_path):
             name = line.strip().split('\t')[0]
             test_img_path = os.path.join(args.dataset_path, name, 'ct.nii.gz')

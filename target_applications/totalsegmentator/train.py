@@ -395,7 +395,7 @@ def main():
     parser.add_argument('--overlap', default=0.5, type=float, help='overlap for sliding_window_inference')
     parser.add_argument('--dataset_path', default='...', help='dataset path')
     parser.add_argument('--model_backbone', default='unet', help='model backbone, also avaliable for swinunetr')
-    parser.add_argument('--percent', default=1081, type=int, help='percent of training data')
+    parser.add_argument('--fold', default=1, type=int, help='data fold')
 
     args = parser.parse_args()
     
