@@ -29,7 +29,7 @@ pip install monai[all]==0.9.0
 pip install -r requirements.txt
 ```
 
-##### 2. Download the pre-trained Swin UNETR checkpoint
+##### 2. Download the pre-trained  checkpoint
 
 ```bash
 cd target_applications/totalsegmentator/pretrained_weights/
@@ -43,7 +43,7 @@ cd ../../../
 
 from [Zenodo](https://doi.org/10.5281/zenodo.6802613) (1,228 subjects) and save it to `/path/to/your/data/TotalSegmentator`
 
-##### 4. Fine-tune the pre-trained Swin UNETR on TotalSegmentator
+##### 4. Fine-tune SuPreM (U-Net and SegResNet) on TotalSegmentator
 
 ```bash
 # Single GPU
@@ -67,7 +67,7 @@ for arch in unet segresnet; do
 done
 ```
 
-##### 5. Evaluate the performance per class
+##### 5. Evaluate the performance per class of SuPreM
 
 ```bash
 # Single GPU
@@ -89,7 +89,7 @@ done
 done
 ```
 
-##### 6. Fine-tune the pre-trained Swin UNETR on TotalSegmentator
+##### 6. Fine-tune the from-scratch models (U-Net and SegResNet) using TotalSegmentator
 
 ```bash
 # Single GPU
@@ -107,7 +107,7 @@ done
 done
 ```
 
-##### 7. Evaluate the performance per class
+##### 7. Evaluate the per-class performance of the model trained from scratch
 
 ```bash
 # Single GPU
@@ -123,13 +123,13 @@ checkpoint_path=out/efficiency.$arch.$target_task.scratch.fold$fold/best_model.p
 num_target_class=19
 
 
-python -W ignore -m torch.distributed.launch --nproc_per_node=1 --master_port=$RANDOM_PORT test.py --dist  --model_backbone $arch --log_name efficiency.$arch.$target_task.scratch.fold$fold --map_type $target_task --num_class $num_target_class --dataset_path $datapath --num_workers 8 --batch_size 2 --pretrain $checkpoint_path --train_type efficiency --percent fold
+python -W ignore -m torch.distributed.launch --nproc_per_node=1 --master_port=$RANDOM_PORT test.py --dist  --model_backbone $arch --log_name efficiency.$arch.$target_task.scratch.fold$fold --map_type $target_task --num_class $num_target_class --dataset_path $datapath --num_workers 8 --batch_size 2 --pretrain $checkpoint_path --train_type efficiency --percent $fold
 done
 done
 ```
 
 
-##### 8. Organize the  result
+##### 8. Organize the results and checkpoints into separate folders.
 ```bash
 cd target_applications/totalsegmentator/
 mkdir checkpoint #save checkpoints
@@ -147,10 +147,10 @@ for subdir in "$source_folder"/*; do
     fi
   fi
 done
-
+# move csv file to result folder
 target_folder="result"
 
-# move csv file to result folder
+
 for subdir in "$source_folder"/*; do
   if [ -d "$subdir" ]; then 
     subdir_name=$(basename "$subdir")
