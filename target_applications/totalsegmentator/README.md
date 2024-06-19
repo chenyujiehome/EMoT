@@ -21,8 +21,9 @@ source activate suprem
 ##### 1. Clone the GitHub repository
 
 ```bash
-git clone https://github.com/MrGiovanni/SuPreM
+git clone https://github.com/chenyujiehome/SuPreM.git
 cd SuPreM/
+git checkout sup_scratch
 pip install torch==1.11.0+cu113 torchvision==0.12.0+cu113 torchaudio==0.11.0 --extra-index-url https://download.pytorch.org/whl/cu113
 pip install monai[all]==0.9.0
 pip install -r requirements.txt
