@@ -32,8 +32,6 @@ pip install -r requirements.txt
 
 ```bash
 cd target_applications/totalsegmentator/pretrained_weights/
-wget https://huggingface.co/MrGiovanni/SuPreM/resolve/main/supervised_suprem_swinunetr_2100.pth
-wget https://huggingface.co/MrGiovanni/SuPreM/resolve/main/supervised_suprem_segresnet_2100.pth
 wget https://huggingface.co/MrGiovanni/SuPreM/resolve/main/supervised_suprem_unet_2100.pth
 cd ../../../
 ```
@@ -49,8 +47,8 @@ from [Zenodo](https://doi.org/10.5281/zenodo.6802613) (1,228 subjects) and save 
 
 cd target_applications/totalsegmentator/
 RANDOM_PORT=$((RANDOM % 64512 + 1024))
-datapath=/scratch/zzhou82/data/Totalsegmentator_dataset/Totalsegmentator_dataset/ # change to /path/to/your/data/TotalSegmentator
-arch=swinunetr # support swinunetr, unet, and segresnet
+datapath=/path/to/your/data/TotalSegmentator/ # change to /path/to/your/data/TotalSegmentator
+arch=unet # support swinunetr, unet, and segresnet
 suprem_path=pretrained_weights/supervised_suprem_swinunetr_2100.pth
 target_task=vertebrae
 num_target_class=25
@@ -66,7 +64,8 @@ python -W ignore -m torch.distributed.launch --nproc_per_node=1 --master_port=$R
 
 cd target_applications/totalsegmentator/
 RANDOM_PORT=$((RANDOM % 64512 + 1024))
-datapath=/scratch/zzhou82/data/Totalsegmentator_dataset/Totalsegmentator_dataset/ # change to /path/to/your/data/TotalSegmentator
+arch=unet # support swinunetr, unet, and segresnet
+datapath=/path/to/your/data/TotalSegmentator/ # change to /path/to/your/data/TotalSegmentator
 checkpoint_path=out/efficiency.$arch.$target_task.number$num_target_annotation/best_model.pth
 target_task=vertebrae
 num_target_class=25
