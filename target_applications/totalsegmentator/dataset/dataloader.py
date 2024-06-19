@@ -56,24 +56,24 @@ from monai.utils.enums import PostFix
 DEFAULT_POST_FIX = PostFix.meta()
 
 class_map_part_cardiac = {
-    1: "esophagus",
-    2: "trachea",
-    3: "heart_myocardium",
-    4: "heart_atrium_left",
-    5: "heart_ventricle_left",
-    6: "heart_atrium_right",
-    7: "heart_ventricle_right",
-    8: "pulmonary_artery",
-    9: "brain",
-    10: "iliac_artery_left",
-    11: "iliac_artery_right",
-    12: "iliac_vena_left",
-    13: "iliac_vena_right",
-    14: "small_bowel",
-    15: "duodenum",
-    16: "colon",
-    17: "urinary_bladder",
-    18: "face"
+    1: "heart",
+    2: "aorta",
+    3: "pulmonary_vein",
+    4: "brachiocephalic_trunk",
+    5: "subclavian_artery_right",
+    6: "subclavian_artery_left",
+    7: "common_carotid_artery_right",
+    8: "common_carotid_artery_left",
+    9: "brachiocephalic_vein_left",
+    10: "brachiocephalic_vein_right",
+    11: "atrial_appendage_left",
+    12: "superior_vena_cava",
+    13: "inferior_vena_cava",
+    14: "portal_vein_and_splenic_vein",
+    15: "iliac_artery_left",
+    16: "iliac_artery_right",
+    17: "iliac_vena_left",
+    18: "iliac_vena_right",
     }
 
 class_map_part_organs = {
