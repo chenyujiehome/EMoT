@@ -131,12 +131,12 @@ done
 ##### 8. Organize the  result
 ```bash
 cd target_applications/totalsegmentator/
-mkdir model #save checkpoints
+mkdir checkpoint #save checkpoints
 mkdir result #save csv file
 
 #move best_model.pth to model folder
 source_folder="out"
-target_folder="model"
+target_folder="checkpoint"
 for subdir in "$source_folder"/*; do
   if [ -d "$subdir" ]; then 
     subdir_name=$(basename "$subdir")
