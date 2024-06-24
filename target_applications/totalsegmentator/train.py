@@ -353,11 +353,6 @@ def main():
     parser.add_argument('--resume', default=None, help='The path resume from checkpoint')
     parser.add_argument('--pretrain', default=None, 
                         help='The path of pretrain model; for unet: ./pretrained_weights/epoch_400.pth')
-    parser.add_argument('--trans_encoding', default='rand_embedding', 
-                        help='the type of encoding: rand_embedding or word_embedding')
-    parser.add_argument('--word_embedding', default='./pretrained_weights/word_embedding.pth', 
-                        help='The path of word embedding')
-
     parser.add_argument('--max_epoch', default=201, type=int, help='Number of training epoches')
     parser.add_argument('--store_num', default=10, type=int, help='Store model how often')
     parser.add_argument('--warmup_epoch', default=20, type=int, help='number of warmup epochs')
@@ -366,7 +361,6 @@ def main():
 
     parser.add_argument('--dataset_list', nargs='+', default=['total_set'])
 
-    parser.add_argument('--data_root_path', default='...', help='data root path')
     parser.add_argument('--data_txt_path', default='./dataset/dataset_list/', help='data txt path')
 
     parser.add_argument('--batch_size', default=1, type=int, help='batch size')
@@ -384,14 +378,6 @@ def main():
     parser.add_argument('--num_samples', default=1, type=int, help='sample number in each ct')
     parser.add_argument('--map_type', default='organs', help='organs | muscles | cardiac | vertebrae | ribs') 
     parser.add_argument('--num_class', default=18, type=int, help='class num: 18 | 22 | 19 | 25 | 25')
-    parser.add_argument('--phase', default='train', help='train or validation or test')
-    parser.add_argument('--uniform_sample', action="store_true", default=False, help='whether utilize uniform sample strategy')
-    parser.add_argument('--datasetkey', nargs='+', default=['01', '02', '03', '04', '05', 
-                                            '07', '08', '09', '12', '13', '10_03', 
-                                            '10_06', '10_07', '10_08', '10_09', '10_10'],
-                                            help='the content for ')
-    parser.add_argument('--cache_dataset', action="store_true", default=False, help='whether use cache dataset')
-    parser.add_argument('--cache_rate', default=0.005, type=float, help='The percentage of cached data in total')
     parser.add_argument('--overlap', default=0.5, type=float, help='overlap for sliding_window_inference')
     parser.add_argument('--dataset_path', default='...', help='dataset path')
     parser.add_argument('--model_backbone', default='unet', help='model backbone, also avaliable for swinunetr')
