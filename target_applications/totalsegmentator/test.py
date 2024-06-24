@@ -99,13 +99,13 @@ def validation(model, ValLoader, args):
     os.makedirs(output_directory, exist_ok=True)
 
     if dice_results:
-        with open(os.path.join(output_directory, f'{args.model_backbone}_{args.map_type}_dice_validation_results.csv'), 'w', newline='') as file:
+        with open(os.path.join(output_directory, f'{args.model_name}_{args.model_backbone}_{args.map_type}_dice_validation_results.csv'), 'w', newline='') as file:
             fieldnames = ["name", "background"] + list(selected_class_map.values())
             writer = csv.DictWriter(file, fieldnames=fieldnames)
             writer.writeheader()
             writer.writerows(dice_results)
     if nsd_results:
-        with open(os.path.join(output_directory, f'{args.model_backbone}_{args.map_type}_nsd_validation_results.csv'), 'w', newline='') as file:
+        with open(os.path.join(output_directory, f'{args.model_name}_{args.model_backbone}_{args.map_type}_nsd_validation_results.csv'), 'w', newline='') as file:
             fieldnames = ["name", "background"] + list(selected_class_map.values())
             writer = csv.DictWriter(file, fieldnames=fieldnames)
             writer.writeheader()
@@ -258,6 +258,7 @@ def main():
     parser.add_argument("--epoch", default=0)
     ## logging
     parser.add_argument('--log_name', default='...', help='The path resume from checkpoint')
+    parser.add_argument('--model_name', default='suprem', help='name of the model')
     ## model load
     parser.add_argument('--resume', default=None, help='The path resume from checkpoint')
     parser.add_argument('--pretrain', default='...', 
