@@ -49,7 +49,7 @@ from [Zenodo](https://doi.org/10.5281/zenodo.6802613) (1,228 subjects) and save 
 
 cd target_applications/totalsegmentator/
 RANDOM_PORT=$((RANDOM % 64512 + 1024))
-model_name=suprem
+pretraining_method_name=suprem
 datapath=/path/to/your/data/TotalSegmentator/ # change to /path/to/your/data/TotalSegmentator
 target_task=cardiac
 num_target_class=19
@@ -62,7 +62,7 @@ for arch in unet segresnet; do
 
     for fold in {1..5}; do
         RANDOM_PORT=$((RANDOM % 64512 + 1024))
-        python -W ignore -m torch.distributed.launch --nproc_per_node=1 --master_port=$RANDOM_PORT train.py --dist  --model_backbone $arch --log_name $model_name.$arch.$target_task.fold$fold --map_type $target_task --num_class $num_target_class --dataset_path $datapath --num_workers 8 --batch_size 2 --pretrain $suprem_path --fold $fold --model_name=$model_name
+        python -W ignore -m torch.distributed.launch --nproc_per_node=1 --master_port=$RANDOM_PORT train.py --dist  --model_backbone $arch --log_name $pretraining_method_name.$arch.$target_task.fold$fold --map_type $target_task --num_class $num_target_class --dataset_path $datapath --num_workers 8 --batch_size 2 --pretrain $suprem_path --fold $fold --pretraining_method_name $pretraining_method_name
     done
 done
 ```
@@ -74,17 +74,18 @@ done
 
 cd target_applications/totalsegmentator/
 RANDOM_PORT=$((RANDOM % 64512 + 1024))
-model_name=suprem
+pretraining_method_name=suprem
 for arch in unet segresnet; do
 for fold in {1..5}
 do
 datapath=/path/to/your/data/TotalSegmentator/ # change to /path/to/your/data/TotalSegmentator
 target_task=cardiac
-checkpoint_path=out/efficiency.$arch.$target_task.fold$fold/best_model.pth
 num_target_class=19
+checkpoint_path=out/$pretraining_method_name.$arch.$target_task.fold$fold/best_model.pth
 
 
-python -W ignore -m torch.distributed.launch --nproc_per_node=1 --master_port=$RANDOM_PORT test.py --dist  --model_backbone $arch --log_name $model_name.$arch.$target_task.fold$fold --map_type $target_task --num_class $num_target_class --dataset_path $datapath --num_workers 8 --batch_size 2 --pretrain $checkpoint_path  --fold $fold --model_name=$model_name
+
+python -W ignore -m torch.distributed.launch --nproc_per_node=1 --master_port=$RANDOM_PORT test.py --dist  --model_backbone $arch --log_name $pretraining_method_name.$arch.$target_task.fold$fold --map_type $target_task --num_class $num_target_class --dataset_path $datapath --num_workers 8 --batch_size 2 --pretrain $checkpoint_path  --fold $fold --pretraining_method_name $pretraining_method_name
 done
 done
 ```
@@ -96,14 +97,14 @@ done
 
 cd target_applications/totalsegmentator/
 RANDOM_PORT=$((RANDOM % 64512 + 1024))
-model_name=scratch
+pretraining_method_name=scratch
 datapath=/path/to/your/data/TotalSegmentator/ # change to /path/to/your/data/TotalSegmentator
 for arch in unet segresnet; do
 target_task=cardiac
 num_target_class=19
 for fold in {1..5}
 do
-python -W ignore -m torch.distributed.launch --nproc_per_node=1 --master_port=$RANDOM_PORT train.py --dist  --model_backbone $arch --log_name $model_name.$arch.$target_task.fold$fold --map_type $target_task --num_class $num_target_class --dataset_path $datapath --num_workers 8 --batch_size 2  --fold $fold --model_name $model_name
+python -W ignore -m torch.distributed.launch --nproc_per_node=1 --master_port=$RANDOM_PORT train.py --dist  --model_backbone $arch --log_name $pretraining_method_name.$arch.$target_task.fold$fold --map_type $target_task --num_class $num_target_class --dataset_path $datapath --num_workers 8 --batch_size 2  --fold $fold --pretraining_method_name $pretraining_method_name
 done
 done
 ```
@@ -115,17 +116,18 @@ done
 
 cd target_applications/totalsegmentator/
 RANDOM_PORT=$((RANDOM % 64512 + 1024))
-model_name=scratch
+pretraining_method_name=scratch
 for arch in unet segresnet; do
 for fold in {1..5}
 do
 datapath=/path/to/your/data/TotalSegmentator/ # change to /path/to/your/data/TotalSegmentator
 target_task=cardiac
-checkpoint_path=out/efficiency.$arch.$target_task.scratch.fold$fold/best_model.pth
 num_target_class=19
+checkpoint_path=out/$pretraining_method_name.$arch.$target_task.fold$fold/best_model.pth
 
 
-python -W ignore -m torch.distributed.launch --nproc_per_node=1 --master_port=$RANDOM_PORT test.py --dist  --model_backbone $arch --log_name $model_name.$arch.$target_task.fold$fold --map_type $target_task --num_class $num_target_class --dataset_path $datapath --num_workers 8 --batch_size 2 --pretrain $checkpoint_path  --fold $fold --model_name $model_name
+
+python -W ignore -m torch.distributed.launch --nproc_per_node=1 --master_port=$RANDOM_PORT test.py --dist  --model_backbone $arch --log_name $pretraining_method_name.$arch.$target_task.fold$fold --map_type $target_task --num_class $num_target_class --dataset_path $datapath --num_workers 8 --batch_size 2 --pretrain $checkpoint_path  --fold $fold --pretraining_method_name $pretraining_method_name
 done
 done
 ```

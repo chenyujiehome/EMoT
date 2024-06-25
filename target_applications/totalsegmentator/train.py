@@ -349,7 +349,7 @@ def main():
     parser.add_argument("--epoch", default=0)
     ## logging
     parser.add_argument('--log_name', default='unet_organ', help='The path resume from checkpoint')
-    parser.add_argument('--model_name', default='suprem', help='name of the model')
+    parser.add_argument('--pretraining_method_name', default='suprem', help='name of the model')
     ## model load
     parser.add_argument('--resume', default=None, help='The path resume from checkpoint')
     parser.add_argument('--pretrain', default=None, 

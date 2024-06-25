@@ -37,20 +37,19 @@ arch=$1
 target_task=$2
 num_target_class=$3
 fold=$4
+pretraining_method_name=$5
 # the maximum number of target annotations is 1081 for the whole training dataset
 if [ "$arch" == "segresnet" ]; then suprem_path=pretrained_weights/supervised_suprem_segresnet_2100.pth; elif [ "$arch" == "unet" ]; then suprem_path=pretrained_weights/supervised_suprem_unet_2100.pth; else echo "Error in arch"; fi
-log_name=train.$arch.$target_task.fold$fold
+log_name=$pretraining_method_name.$arch.$target_task.fold$fold
 checkpoint_path=out/$log_name/best_model.pth
 
 ### Training 
+if [ "$pretraining_method_name" == "scratch" ]; then python -W ignore -m torch.distributed.launch --nproc_per_node=1 --master_port=$RANDOM_PORT train.py --dist --model_backbone $arch --log_name $log_name --map_type $target_task --num_class $num_target_class --dataset_path $datapath --num_workers 12 --batch_size 8  --fold $fold --pretraining_method_name $pretraining_method_name; else python -W ignore -m torch.distributed.launch --nproc_per_node=1 --master_port=$RANDOM_PORT train.py --dist --model_backbone $arch --log_name $log_name --map_type $target_task --num_class $num_target_class --dataset_path $datapath --num_workers 12 --batch_size 8 --pretrain $suprem_path --fold $fold --pretraining_method_name $pretraining_method_name; fi
 
-python -W ignore -m torch.distributed.launch --nproc_per_node=1 --master_port=$RANDOM_PORT train.py --dist --model_backbone $arch --log_name $log_name --map_type $target_task --num_class $num_target_class --dataset_path $datapath --num_workers 12 --batch_size 8 --pretrain $suprem_path --fold $fold
-
-# for arch in segresnet; do for fold in 1 2 3 4 5; do sbatch --error=logs/train.$arch.cardiac.fold$fold.out --output=logs/train.$arch.cardiac.fold$fold.out hg.sh  $arch cardiac 19 $fold; done; done
+# for pretraining_method_name in suprem scratch; do for arch in segresnet; do for fold in 1 2 3 4 5; do sbatch --error=logs/$pretraining_method_name.$arch.cardiac.fold$fold.out --output=logs/$pretraining_method_name.$arch.cardiac.fold$fold.out hg.sh  $arch cardiac 19 $fold $pretraining_method_name; done; done; done
 
 ### Testing
-
-# python -W ignore -m torch.distributed.launch --nproc_per_node=1 --master_port=$RANDOM_PORT test.py --dist  --model_backbone $arch --log_name efficiency.$arch.$target_task.number$num_target_annotation --map_type $target_task --num_class $num_target_class --dataset_path $datapath --num_workers 12 --batch_size 2 --pretrain $checkpoint_path 
+# python -W ignore -m torch.distributed.launch --nproc_per_node=1 --master_port=$RANDOM_PORT test.py --dist  --model_backbone $arch --log_name $log_name --map_type $target_task --num_class $num_target_class --dataset_path $datapath --num_workers 8 --batch_size 2 --pretrain $checkpoint_path  --fold $fold --pretraining_method_name $pretraining_method_name
 
 # # for num_target_annotation in 64 128 256 512 1024; do sbatch --error=logs/test.organs.$num_target_annotation.out --output=logs/test.organs.$num_target_annotation.out hg.sh organs 18 $num_target_annotation; done
 
