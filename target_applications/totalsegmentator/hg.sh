@@ -5,9 +5,9 @@
 #SBATCH -n 12
 #SBATCH -G a100:1
 ##SBATCH --exclusive
-#SBATCH --mem=100G
+#SBATCH --mem=80G
 #SBATCH -p general
-#SBATCH -t 5-00:00:00
+#SBATCH -t 7-00:00:00
 #SBATCH -q public
 
 #SBATCH -o %x_slurm_%j.out     
@@ -30,7 +30,8 @@ source activate suprem
 # cd ../
 
 RANDOM_PORT=$((RANDOM % 64512 + 1024))
-datapath=/scratch/zzhou82/data/Totalsegmentator_dataset/Totalsegmentator_dataset/ 
+# datapath=/scratch/zzhou82/data/Totalsegmentator_dataset/Totalsegmentator_dataset/ 
+datapath=/scratch/zzhou82/data/Totalsegmentator_dataset_v2/Totalsegmentator_dataset_v201
 # change to /path/to/your/data/TotalSegmentator
 arch=$1 
 # support swinunetr, unet, and segresnet
@@ -46,7 +47,13 @@ checkpoint_path=out/$log_name/best_model.pth
 ### Training 
 if [ "$pretraining_method_name" == "scratch" ]; then python -W ignore -m torch.distributed.launch --nproc_per_node=1 --master_port=$RANDOM_PORT train.py --dist --model_backbone $arch --log_name $log_name --map_type $target_task --num_class $num_target_class --dataset_path $datapath --num_workers 12 --batch_size 8  --fold $fold --pretraining_method_name $pretraining_method_name; else python -W ignore -m torch.distributed.launch --nproc_per_node=1 --master_port=$RANDOM_PORT train.py --dist --model_backbone $arch --log_name $log_name --map_type $target_task --num_class $num_target_class --dataset_path $datapath --num_workers 12 --batch_size 8 --pretrain $suprem_path --fold $fold --pretraining_method_name $pretraining_method_name; fi
 
-# for pretraining_method_name in suprem scratch; do for arch in segresnet; do for fold in 1 2 3 4 5; do sbatch --error=logs/$pretraining_method_name.$arch.cardiac.fold$fold.out --output=logs/$pretraining_method_name.$arch.cardiac.fold$fold.out hg.sh  $arch cardiac 19 $fold $pretraining_method_name; done; done; done
+# for pretraining_method_name in suprem scratch; do for arch in segresnet; do for fold in 1; do sbatch --error=logs/$pretraining_method_name.$arch.vertebrae.fold$fold.out --output=logs/$pretraining_method_name.$arch.vertebrae.fold$fold.out hg.sh  $arch vertebrae 25 $fold $pretraining_method_name; done; done; done
+
+# for pretraining_method_name in suprem scratch; do for arch in segresnet; do for fold in 1; do sbatch --error=logs/$pretraining_method_name.$arch.muscles.fold$fold.out --output=logs/$pretraining_method_name.$arch.muscles.fold$fold.out hg.sh  $arch muscles 22 $fold $pretraining_method_name; done; done; done
+
+# for pretraining_method_name in suprem scratch; do for arch in segresnet; do for fold in 1; do sbatch --error=logs/$pretraining_method_name.$arch.organs.fold$fold.out --output=logs/$pretraining_method_name.$arch.organs.fold$fold.out hg.sh  $arch organs 18 $fold $pretraining_method_name; done; done; done
+
+# for pretraining_method_name in suprem scratch; do for arch in segresnet; do for fold in 1; do sbatch --error=logs/$pretraining_method_name.$arch.cardiac.fold$fold.out --output=logs/$pretraining_method_name.$arch.cardiac.fold$fold.out hg.sh  $arch cardiac 19 $fold $pretraining_method_name; done; done; done
 
 ### Testing
 # python -W ignore -m torch.distributed.launch --nproc_per_node=1 --master_port=$RANDOM_PORT test.py --dist  --model_backbone $arch --log_name $log_name --map_type $target_task --num_class $num_target_class --dataset_path $datapath --num_workers 8 --batch_size 2 --pretrain $checkpoint_path  --fold $fold --pretraining_method_name $pretraining_method_name
