@@ -38,12 +38,11 @@ wget https://huggingface.co/MrGiovanni/SuPreM/resolve/main/supervised_suprem_seg
 cd ../../../
 ```
 
-##### 3. Download the TotalSegmentator dataset
+##### 3. Download the TotalSegmentator (v2.0.1) dataset
 
-from [Zenodo](https://doi.org/10.5281/zenodo.6802613) (1,228 subjects) and save it to `/path/to/your/data/TotalSegmentator`
+from [Zenodo](https://doi.org/10.5281/zenodo.6802613) (1,228 subjects) (v2.0.1) and save it to `/path/to/your/data/TotalSegmentator`
 
-##### 4. Fine-tune SuPreM (U-Net and SegResNet) on TotalSegmentator
-
+##### 4. Fine-tune SuPreM (U-Net and SegResNet) on TotalSegmentator 
 ```bash
 # Single GPU
 
