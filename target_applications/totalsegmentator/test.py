@@ -240,8 +240,8 @@ def process(args):
     train_loader, train_sampler, val_loader, test_loader = get_loader(args)
 
     if rank == 0:
-        writer = SummaryWriter(log_dir='out/' + args.log_name)
-        print('Writing Tensorboard logs to ', 'out/' + args.log_name)
+        writer = SummaryWriter(log_dir=os.path.join('out', args.log_name))
+        print('Writing Tensorboard logs to ', os.path.join('out', args.log_name))
 
     mean_dice, std = validation(model, test_loader, args)
     print("Mean dice is:", mean_dice)

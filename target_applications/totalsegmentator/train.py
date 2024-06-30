@@ -295,12 +295,11 @@ def process(args):
     train_loader, train_sampler, val_loader, test_loader = get_loader(args)
 
     best_dice = 0
-
+    if not os.path.isdir('checkpoints'):
+        os.mkdir('checkpoints')
     if rank == 0:
-        if not os.path.isdir('out/' + args.log_name):
-            os.mkdir('out/' + args.log_name)
-        writer = SummaryWriter(log_dir='out/' + args.log_name)
-        print('Writing Tensorboard logs to ', 'out/' + args.log_name)
+        writer = SummaryWriter(log_dir=os.path.join('out',args.log_name))
+        print('Writing Tensorboard logs to ', os.path.join('out',args.log_name))
 
     while args.epoch < args.max_epoch:
         if args.dist:
@@ -322,9 +321,9 @@ def process(args):
                     'scheduler': scheduler.state_dict(),
                     "epoch": args.epoch
                 }
-                if not os.path.isdir('checkpoints/' + args.log_name):
-                    os.mkdir('checkpoints/' + args.log_name)
-                torch.save(checkpoint, 'checkpoints/' + args.log_name + '/best_model.pth')
+                if not os.path.isdir(os.path.join('checkpoints',args.log_name)):
+                    os.mkdir(os.path.join('checkpoints',args.log_name))
+                torch.save(checkpoint, os.path.join('checkpoints',args.log_name,'best_model.pth') )
                 print('The best model saved at epoch:', args.epoch)
         
         checkpoint = {
@@ -333,10 +332,10 @@ def process(args):
                 'scheduler': scheduler.state_dict(),
                 "epoch": args.epoch
             }
-        directory = 'checkpoints/' + args.log_name
+        directory = os.path.join('checkpoints',args.log_name)
         if not os.path.isdir(directory):
             os.mkdir(directory)
-        torch.save(checkpoint, directory + '/model.pth')
+        torch.save(checkpoint, os.path.join(directory,'model.pth') )
 
         args.epoch += 1
 
