@@ -2,12 +2,12 @@
 #SBATCH --job-name=suprem-total
 
 #SBATCH -N 1
-#SBATCH -n 12
+#SBATCH -n 8
 #SBATCH -G a100:1
 ##SBATCH --exclusive
 #SBATCH --mem=80G
 #SBATCH -p general
-#SBATCH -t 7-00:00:00
+#SBATCH -t 2-00:00:00
 #SBATCH -q public
 
 #SBATCH -o %x_slurm_%j.out     
