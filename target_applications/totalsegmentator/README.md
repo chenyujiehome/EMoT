@@ -10,6 +10,20 @@
     <a href="https://github.com/MrGiovanni/SuPreM"><img src="https://img.shields.io/github/stars/MrGiovanni/SuPreM?style=social" /></a>
     <a href="https://twitter.com/bodymaps317"><img src="https://img.shields.io/twitter/follow/BodyMaps" alt="Follow on Twitter" /></a>
 </p>
+The results are organized as
+
+```
+totalsegmentator
+    ├── checkpoints
+    │   └── $logname
+    │       ├── best_model.pth
+    │       └── model.pth
+    └── out
+        └── $logname
+            ├── TensorBoardLogs
+            ├── nsd_validation_results.csv
+            └── dice_validation_results.csv
+```
 
 ##### 0. Create a virtual environment (optional)
 
@@ -80,7 +94,7 @@ do
 datapath=/path/to/your/data/TotalSegmentator/ # change to /path/to/your/data/TotalSegmentator
 target_task=cardiac
 num_target_class=19
-checkpoint_path=out/$pretraining_method_name.$arch.$target_task.fold$fold/best_model.pth
+checkpoint_path=checkpoints/$pretraining_method_name.$arch.$target_task.fold$fold/best_model.pth
 
 
 
@@ -122,7 +136,7 @@ do
 datapath=/path/to/your/data/TotalSegmentator/ # change to /path/to/your/data/TotalSegmentator
 target_task=cardiac
 num_target_class=19
-checkpoint_path=out/$pretraining_method_name.$arch.$target_task.fold$fold/best_model.pth
+checkpoint_path=checkpoints/$pretraining_method_name.$arch.$target_task.fold$fold/best_model.pth
 
 
 

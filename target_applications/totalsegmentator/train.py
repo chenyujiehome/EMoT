@@ -297,6 +297,8 @@ def process(args):
     best_dice = 0
 
     if rank == 0:
+        if not os.path.isdir('out/' + args.log_name):
+            os.mkdir('out/' + args.log_name)
         writer = SummaryWriter(log_dir='out/' + args.log_name)
         print('Writing Tensorboard logs to ', 'out/' + args.log_name)
 
