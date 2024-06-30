@@ -320,9 +320,9 @@ def process(args):
                     'scheduler': scheduler.state_dict(),
                     "epoch": args.epoch
                 }
-                if not os.path.isdir('out/' + args.log_name):
-                    os.mkdir('out/' + args.log_name)
-                torch.save(checkpoint, 'out/' + args.log_name + '/best_model.pth')
+                if not os.path.isdir('checkpoints/' + args.log_name):
+                    os.mkdir('checkpoints/' + args.log_name)
+                torch.save(checkpoint, 'checkpoints/' + args.log_name + '/best_model.pth')
                 print('The best model saved at epoch:', args.epoch)
         
         checkpoint = {
@@ -331,7 +331,7 @@ def process(args):
                 'scheduler': scheduler.state_dict(),
                 "epoch": args.epoch
             }
-        directory = 'out/' + args.log_name
+        directory = 'checkpoints/' + args.log_name
         if not os.path.isdir(directory):
             os.mkdir(directory)
         torch.save(checkpoint, directory + '/model.pth')

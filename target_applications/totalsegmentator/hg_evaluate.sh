@@ -41,27 +41,27 @@ fold=$4
 pretraining_method_name=$5
 # the maximum number of target annotations is 1081 for the whole training dataset
 if [ "$arch" == "segresnet" ]; then suprem_path=pretrained_weights/supervised_suprem_segresnet_2100.pth; elif [ "$arch" == "unet" ]; then suprem_path=pretrained_weights/supervised_suprem_unet_2100.pth; else echo "Error in arch"; fi
-log_name=$pretraining_method_name.$arch.$target_task.fold$fold
-checkpoint_path=out/$log_name/best_model.pth
+log_name=eval.$pretraining_method_name.$arch.$target_task.fold$fold
+checkpoint_path=checkpoints/$pretraining_method_name.$arch.$target_task.fold$fold/best_model.pth
 
 ### Training 
 # if [ "$pretraining_method_name" == "scratch" ]; then python -W ignore -m torch.distributed.launch --nproc_per_node=1 --master_port=$RANDOM_PORT train.py --dist  --model_backbone $arch --log_name $log_name --map_type $target_task --num_class $num_target_class --dataset_path $datapath --num_workers 8 --batch_size 2  --fold $fold --pretraining_method_name $pretraining_method_name; else python -W ignore -m torch.distributed.launch --nproc_per_node=1 --master_port=$RANDOM_PORT train.py --dist  --model_backbone $arch --log_name $log_name --map_type $target_task --num_class $num_target_class --dataset_path $datapath --num_workers 8 --batch_size 2  --fold $fold --pretraining_method_name $pretraining_method_name --pretrain $suprem_path; fi
 
-# for pretraining_method_name in suprem scratch; do for arch in segresnet; do for fold in 1; do sbatch --error=logs/$pretraining_method_name.$arch.vertebrae.fold$fold.out --output=logs/$pretraining_method_name.$arch.vertebrae.fold$fold.out hg.sh  $arch vertebrae 25 $fold $pretraining_method_name; done; done; done
+# for pretraining_method_name in suprem scratch; do for arch in segresnet; do for fold in 1; do sbatch --error=logs/$pretraining_method_name.$arch.vertebrae.fold$fold.out --output=logs/$pretraining_method_name.$arch.vertebrae.fold$fold.out hg_evaluate.sh  $arch vertebrae 25 $fold $pretraining_method_name; done; done; done
 
-# for pretraining_method_name in suprem scratch; do for arch in segresnet; do for fold in 1; do sbatch --error=logs/$pretraining_method_name.$arch.muscles.fold$fold.out --output=logs/$pretraining_method_name.$arch.muscles.fold$fold.out hg.sh  $arch muscles 22 $fold $pretraining_method_name; done; done; done
+# for pretraining_method_name in suprem scratch; do for arch in segresnet; do for fold in 1; do sbatch --error=logs/$pretraining_method_name.$arch.muscles.fold$fold.out --output=logs/$pretraining_method_name.$arch.muscles.fold$fold.out hg_evaluate.sh  $arch muscles 22 $fold $pretraining_method_name; done; done; done
 
-# for pretraining_method_name in suprem scratch; do for arch in segresnet; do for fold in 1; do sbatch --error=logs/$pretraining_method_name.$arch.organs.fold$fold.out --output=logs/$pretraining_method_name.$arch.organs.fold$fold.out hg.sh  $arch organs 18 $fold $pretraining_method_name; done; done; done
+# for pretraining_method_name in suprem scratch; do for arch in segresnet; do for fold in 1; do sbatch --error=logs/$pretraining_method_name.$arch.organs.fold$fold.out --output=logs/$pretraining_method_name.$arch.organs.fold$fold.out hg_evaluate.sh  $arch organs 18 $fold $pretraining_method_name; done; done; done
 
-# for pretraining_method_name in suprem scratch; do for arch in segresnet; do for fold in 1; do sbatch --error=logs/$pretraining_method_name.$arch.cardiac.fold$fold.out --output=logs/$pretraining_method_name.$arch.cardiac.fold$fold.out hg.sh  $arch cardiac 19 $fold $pretraining_method_name; done; done; done
+# for pretraining_method_name in suprem scratch; do for arch in segresnet; do for fold in 1; do sbatch --error=logs/$pretraining_method_name.$arch.cardiac.fold$fold.out --output=logs/$pretraining_method_name.$arch.cardiac.fold$fold.out hg_evaluate.sh  $arch cardiac 19 $fold $pretraining_method_name; done; done; done
 
 ### Testing
 python -W ignore -m torch.distributed.launch --nproc_per_node=1 --master_port=$RANDOM_PORT test.py --dist  --model_backbone $arch --log_name $log_name --map_type $target_task --num_class $num_target_class --dataset_path $datapath --num_workers 8 --batch_size 2 --pretrain $checkpoint_path  --fold $fold --pretraining_method_name $pretraining_method_name
 
-# for pretraining_method_name in suprem scratch; do for arch in segresnet; do for fold in 1; do sbatch --error=logs/$pretraining_method_name.$arch.vertebrae.fold$fold.out --output=logs/$pretraining_method_name.$arch.vertebrae.fold$fold.out hg.sh  $arch vertebrae 25 $fold $pretraining_method_name; done; done; done
+# for pretraining_method_name in suprem scratch; do for arch in segresnet; do for fold in 1; do sbatch --error=logs/$pretraining_method_name.$arch.vertebrae.fold$fold.out --output=logs/$pretraining_method_name.$arch.vertebrae.fold$fold.out hg_evaluate.sh  $arch vertebrae 25 $fold $pretraining_method_name; done; done; done
 
-# for pretraining_method_name in suprem scratch; do for arch in segresnet; do for fold in 1; do sbatch --error=logs/$pretraining_method_name.$arch.muscles.fold$fold.out --output=logs/$pretraining_method_name.$arch.muscles.fold$fold.out hg.sh  $arch muscles 22 $fold $pretraining_method_name; done; done; done
+# for pretraining_method_name in suprem scratch; do for arch in segresnet; do for fold in 1; do sbatch --error=logs/$pretraining_method_name.$arch.muscles.fold$fold.out --output=logs/$pretraining_method_name.$arch.muscles.fold$fold.out hg_evaluate.sh  $arch muscles 22 $fold $pretraining_method_name; done; done; done
 
-# for pretraining_method_name in suprem scratch; do for arch in segresnet; do for fold in 1; do sbatch --error=logs/$pretraining_method_name.$arch.organs.fold$fold.out --output=logs/$pretraining_method_name.$arch.organs.fold$fold.out hg.sh  $arch organs 18 $fold $pretraining_method_name; done; done; done
+# for pretraining_method_name in suprem scratch; do for arch in segresnet; do for fold in 1; do sbatch --error=logs/$pretraining_method_name.$arch.organs.fold$fold.out --output=logs/$pretraining_method_name.$arch.organs.fold$fold.out hg_evaluate.sh  $arch organs 18 $fold $pretraining_method_name; done; done; done
 
-# for pretraining_method_name in suprem scratch; do for arch in segresnet; do for fold in 1; do sbatch --error=logs/$pretraining_method_name.$arch.cardiac.fold$fold.out --output=logs/$pretraining_method_name.$arch.cardiac.fold$fold.out hg.sh  $arch cardiac 19 $fold $pretraining_method_name; done; done; done
+# for pretraining_method_name in suprem scratch; do for arch in segresnet; do for fold in 1; do sbatch --error=logs/$pretraining_method_name.$arch.cardiac.fold$fold.out --output=logs/$pretraining_method_name.$arch.cardiac.fold$fold.out hg_evaluate.sh  $arch cardiac 19 $fold $pretraining_method_name; done; done; done
