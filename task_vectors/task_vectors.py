@@ -14,8 +14,13 @@ class TaskVector():
         else:
             assert pretrained_checkpoint is not None and finetuned_checkpoint is not None
             with torch.no_grad():
-                pretrained_state_dict = torch.load(pretrained_checkpoint).state_dict()
-                finetuned_state_dict = torch.load(finetuned_checkpoint).state_dict()
+                if torch.cuda.is_available():
+                    pretrained_state_dict = torch.load(pretrained_checkpoint)['net']
+                    finetuned_state_dict = torch.load(finetuned_checkpoint)['net']
+                else:
+                    pretrained_state_dict = torch.load(pretrained_checkpoint,map_location=torch.device('cpu'))['net']
+                    finetuned_state_dict = torch.load(finetuned_checkpoint,map_location=torch.device('cpu'))['net']
+                
                 self.vector = {}
                 for key in pretrained_state_dict:
                     if pretrained_state_dict[key].dtype in [torch.int64, torch.uint8]:
