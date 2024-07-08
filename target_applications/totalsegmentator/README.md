@@ -56,7 +56,7 @@ cd ../../../
 
 from [Zenodo](https://doi.org/10.5281/zenodo.6802613) (1,228 subjects) (v2.0.1) and save it to `/path/to/your/data/TotalSegmentator`
 
-##### 4. Fine-tune SuPreM (U-Net and SegResNet) on TotalSegmentator 
+##### 4. Fine-tune pretraining methods (U-Net and SegResNet) on TotalSegmentator 
 ```bash
 # Single GPU
 
@@ -68,19 +68,28 @@ target_task=cardiac
 num_target_class=19
 for arch in unet segresnet; do
     if [ "$arch" = "unet" ]; then
-        suprem_path=pretrained_weights/supervised_suprem_unet_2100.pth
+    case $pretraining_method_name in 
+    suprem)
+        pretrain_path=pretrained_weights/supervised_suprem_unet_2100.pth
+        ;;
+    genesis)
+        pretrain_path=self_supervised_models_genesis_unet_620.pt
+        ;;
+
+        esac
+
     elif [ "$arch" = "segresnet" ]; then
-        suprem_path=pretrained_weights/supervised_suprem_segresnet_2100.pth
+        pretrain_path=pretrained_weights/supervised_suprem_segresnet_2100.pth;;
     fi
 
     for fold in {1..5}; do
         RANDOM_PORT=$((RANDOM % 64512 + 1024))
-        python -W ignore -m torch.distributed.launch --nproc_per_node=1 --master_port=$RANDOM_PORT train.py --dist  --model_backbone $arch --log_name $pretraining_method_name.$arch.$target_task.fold$fold --map_type $target_task --num_class $num_target_class --dataset_path $datapath --num_workers 8 --batch_size 2 --pretrain $suprem_path --fold $fold --pretraining_method_name $pretraining_method_name
+        python -W ignore -m torch.distributed.launch --nproc_per_node=1 --master_port=$RANDOM_PORT train.py --dist  --model_backbone $arch --log_name $pretraining_method_name.$arch.$target_task.fold$fold --map_type $target_task --num_class $num_target_class --dataset_path $datapath --num_workers 8 --batch_size 2 --pretrain $pretrain_path --fold $fold --pretraining_method_name $pretraining_method_name
     done
 done
 ```
 
-##### 5. Evaluate the performance per class of SuPreM
+##### 5. Evaluate the performance per class of pretraining methods
 
 ```bash
 # Single GPU
@@ -146,37 +155,3 @@ done
 ```
 
 
-##### 8. Organize the results and checkpoints into separate folders.
-```bash
-cd target_applications/totalsegmentator/
-mkdir checkpoint #save checkpoints
-mkdir result #save csv file
-
-#move best_model.pth to model folder
-source_folder="out"
-target_folder="checkpoint"
-for subdir in "$source_folder"/*; do
-  if [ -d "$subdir" ]; then 
-    subdir_name=$(basename "$subdir")
-    best_model_path="$subdir/best_model.pth"
-    if [ -f "$best_model_path" ]; then 
-      mv "$best_model_path" "$target_folder/${subdir_name}.pth"
-    fi
-  fi
-done
-# move csv file to result folder
-target_folder="result"
-
-
-for subdir in "$source_folder"/*; do
-  if [ -d "$subdir" ]; then 
-    subdir_name=$(basename "$subdir")
-    mkdir -p "$target_folder/$subdir_name"
-    find "$subdir" -maxdepth 1 -type f -name "*.csv" -exec mv {} "$target_folder/$subdir_name/" \;
-  fi
-done
-
-
-
-
-```
