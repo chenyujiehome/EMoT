@@ -91,110 +91,6 @@ def process(args):
     args.device = torch.device(f"cuda:{rank}")
     torch.cuda.set_device(args.device)
 
-    # prepare the 3D model  
-    # swin unetr pre-trained by us
-    if args.model_backbone == "selfswin":
-        model = SwinUNETR(img_size=(args.roi_x, args.roi_y, args.roi_z),
-                        in_channels=1,
-                        out_channels=args.num_class,
-                        feature_size=48,
-                        drop_rate=0.0,
-                        attn_drop_rate=0.0,
-                        dropout_path_rate=0.0,
-                        use_checkpoint=False
-                        )
-        store_dict = model.state_dict()
-        model_dict = torch.load(args.pretrain, map_location='cpu')["state_dict"]
-        amount = 0
-        for key in model_dict.keys():
-            new_key = '.'.join(key.split('.')[1:])
-            if 'out' not in new_key:
-                if 'rotation' in new_key:
-                    break
-                else:
-                    store_dict[new_key] = model_dict[key]
-                    amount += 1
-        print(amount, len(model_dict.keys()))
-        model.load_state_dict(store_dict)
-        print('Use Self-supervised Swin Unetr pretrained weights')
-
-    # swin unetr released by monai
-    if args.model_backbone == 'selfswinunetr':
-        model = SwinUNETR(img_size=(args.roi_x, args.roi_y, args.roi_z),
-                        in_channels=1,
-                        out_channels=args.num_class,
-                        feature_size=48,
-                        drop_rate=0.0,
-                        attn_drop_rate=0.0,
-                        dropout_path_rate=0.0,
-                        use_checkpoint=False
-                        )
-        store_dict = model.state_dict()
-        model_dict = torch.load(args.pretrain)["state_dict"]
-        amount = 0
-        for key in model_dict.keys():
-            if 'out' not in key:
-                store_dict[key] = model_dict[key]
-                amount += 1
-        print(amount, len(model_dict.keys()))
-        model.load_state_dict(store_dict)
-        print('Use Self-supervised Swin Unetr pretrained weights by monai')
-
-    # 50,000 pre-trained weights released by monai
-    if args.model_backbone == 'ssl':
-        model = SwinUNETR(img_size=(args.roi_x, args.roi_y, args.roi_z),
-                        in_channels=1,
-                        out_channels=args.num_class,
-                        feature_size=48,
-                        drop_rate=0.0,
-                        attn_drop_rate=0.0,
-                        dropout_path_rate=0.0,
-                        use_checkpoint=False
-                        )
-        ssl_dict = torch.load(args.pretrain)
-        ssl_weights = ssl_dict["model"]
-
-        monai_loadable_state_dict = OrderedDict()
-        model_prior_dict = model.state_dict()
-        model_update_dict = model_prior_dict
-
-        del ssl_weights["encoder.mask_token"]
-        del ssl_weights["encoder.norm.weight"]
-        del ssl_weights["encoder.norm.bias"]
-        del ssl_weights["out.conv.conv.weight"]
-        del ssl_weights["out.conv.conv.bias"]
-
-        for key, value in ssl_weights.items():
-            if key[:8] == "encoder.":
-                if key[8:19] == "patch_embed":
-                    new_key = "swinViT." + key[8:]
-                else:
-                    new_key = "swinViT." + key[8:18] + key[20:]
-                monai_loadable_state_dict[new_key] = value
-            else:
-                monai_loadable_state_dict[key] = value
-
-        model_update_dict.update(monai_loadable_state_dict)
-        model.load_state_dict(model_update_dict, strict=True)
-        model_final_loaded_dict = model.state_dict()
-
-        layer_counter = 0
-        for k, _v in model_final_loaded_dict.items():
-            if k in model_prior_dict:
-                layer_counter = layer_counter + 1
-
-                old_wts = model_prior_dict[k]
-                new_wts = model_final_loaded_dict[k]
-
-                old_wts = old_wts.to("cpu").numpy()
-                new_wts = new_wts.to("cpu").numpy()
-                diff = np.mean(np.abs(old_wts, new_wts))
-                print("Layer {}, the update difference is: {}".format(k, diff))
-                if diff == 0.0:
-                    print("Warning: No difference found for layer {}".format(k))
-        print("Total updated layers {} / {}".format(layer_counter, len(model_prior_dict)))
-        print("50,000 Pretrained Weights Successfully Loaded !")
-
     # SuPreM swinunetr backbone
     if args.model_backbone == 'swinunetr':
         model = SwinUNETR(img_size=(args.roi_x, args.roi_y, args.roi_z),
@@ -219,24 +115,39 @@ def process(args):
                     amount += 1
         print(amount, len(model_dict.keys()))
         model.load_state_dict(store_dict)
-        print('Use SuPreM SwinUnetr backbone pretrained weights')
+        print(f'Use {args.pretraining_method_name} SwinUnetr backbone pretrained weights')
     
     # SuPreM unet backbone
     if args.model_backbone == 'unet':
         model = UNet3D(n_class=args.num_class)
         if args.pretrain is not None:
-            model_dict = torch.load(args.pretrain)['net']
-            store_dict = model.state_dict()
-            amount = 0
-            for key in model_dict.keys():
-                new_key = '.'.join(key.split('.')[2:])
-                if new_key in store_dict.keys():
-                    store_dict[new_key] = model_dict[key]   
-                    amount += 1
+            if args.pretraining_method_name=="suprem":
+                model_dict = torch.load(args.pretrain)['net']
+                store_dict = model.state_dict()
+                amount = 0
+                for key in model_dict.keys():
+                    new_key = '.'.join(key.split('.')[2:])
+                    if new_key in store_dict.keys():
+                        store_dict[new_key] = model_dict[key]   
+                        amount += 1
 
-            model.load_state_dict(store_dict)
-            print(amount, len(store_dict.keys()))
-            print('Use SuPreM UNet backbone pretrained weights')
+                model.load_state_dict(store_dict)
+                print(amount, len(store_dict.keys()))
+            elif args.pretraining_method_name=="genesis":
+                model_dict = torch.load(args.pretrain)['state_dict']
+                store_dict = model.state_dict()
+                amount=0
+                for key in model_dict.keys():
+                    if 'out_tr' not in key:
+                        new_key = '.'.join(key.split('.')[1:])
+                        if new_key in store_dict.keys():
+                            store_dict[new_key] = model_dict[key]   
+                            amount += 1
+                model.load_state_dict(store_dict)
+                print(amount, len(store_dict.keys()))
+            else:
+                print(f"unkown: {args.pretraining_method_name}")
+            print(f'Use {args.pretraining_method_name} UNet backbone pretrained weights')
         else:
             print('This is training from scratch')
 
@@ -261,7 +172,7 @@ def process(args):
                     amount += 1
             model.load_state_dict(store_dict)
             print(amount, len(store_dict.keys()))
-            print('Use SuPreM SegResNet backbone pretrained weights')
+            print(f'Use {args.pretraining_method_name} SegResNet backbone pretrained weights')
         else:
             print('This is SegResNet training from scratch')
             

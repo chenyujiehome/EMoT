@@ -175,28 +175,6 @@ def process(args):
         print(amount, len(store_dict.keys()))
         print(f'Load Swin UNETR transfer learning weights')
 
-    if args.model_backbone == 'selfswin':
-        model = SwinUNETR(img_size=(args.roi_x, args.roi_y, args.roi_z),
-                    in_channels=1,
-                    out_channels=args.num_class,
-                    feature_size=48,
-                    drop_rate=0.0,
-                    attn_drop_rate=0.0,
-                    dropout_path_rate=0.0,
-                    use_checkpoint=False
-                    )
-        store_dict = model.state_dict()
-        model_dict = torch.load(args.pretrain)['net']
-        store_dict = model.state_dict()
-        amount = 0
-        for key in model_dict.keys():
-            new_key = '.'.join(key.split('.')[1:])
-            if new_key in store_dict.keys():
-                store_dict[new_key] = model_dict[key]   
-                amount += 1
-        model.load_state_dict(store_dict)
-        print(amount, len(store_dict.keys()))
-        print(f'Load Self Swin transfer learning weights')
 
     if args.model_backbone == 'unet':
         model = UNet3D(n_class=args.num_class)

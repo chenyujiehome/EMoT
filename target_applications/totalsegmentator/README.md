@@ -70,16 +70,34 @@ for arch in unet segresnet; do
     if [ "$arch" = "unet" ]; then
     case $pretraining_method_name in 
     suprem)
-        pretrain_path=pretrained_weights/supervised_suprem_unet_2100.pth
+        pretrain_path="pretrained_weights/supervised_suprem_unet_2100.pth"
         ;;
     genesis)
-        pretrain_path=self_supervised_models_genesis_unet_620.pt
+        pretrain_path="pretrained_weights/self_supervised_models_genesis_unet_620.pt"
         ;;
-
-        esac
+    scratch)
+        echo "from scratch"
+        ;;
+    *)
+        echo "unkown: $pretraining_method_name"
+        ;;
+    esac
 
     elif [ "$arch" = "segresnet" ]; then
-        pretrain_path=pretrained_weights/supervised_suprem_segresnet_2100.pth;;
+    case $pretraining_method_name in 
+    suprem)
+        pretrain_path="pretrained_weights/supervised_suprem_segresnet_2100.pth"
+        ;;
+    scratch)
+        echo "from scratch"
+        ;;
+    *)
+        echo "unkown: $pretraining_method_name"
+        ;;
+    esac
+        
+    else
+        echo "unkown : $arch"
     fi
 
     for fold in {1..5}; do
