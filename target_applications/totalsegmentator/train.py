@@ -28,7 +28,7 @@ from monai.networks.nets import SegResNet
 from dataset.dataloader import get_loader
 from utils.utils import dice_score, check_data, TEMPLATE, get_key, NUM_CLASS
 from optimizers.lr_scheduler import LinearWarmupCosineAnnealingLR
-
+from utils.generate_model_medical_net import generate_model
 
 torch.multiprocessing.set_sharing_strategy('file_system')
 
@@ -145,6 +145,21 @@ def process(args):
                             amount += 1
                 model.load_state_dict(store_dict)
                 print(amount, len(store_dict.keys()))
+            elif args.pretraining_method_name=="med3d":
+                class Opt:
+                    def __init__(self, model_depth, input_W, input_H, input_D, resnet_shortcut, no_cuda, n_seg_classes,pretrain_path):
+                        self.model_depth = model_depth
+                        self.input_W = input_W
+                        self.input_H = input_H
+                        self.input_D = input_D
+                        self.resnet_shortcut = resnet_shortcut
+                        self.no_cuda = no_cuda
+                        self.n_seg_classes = n_seg_classes
+                        self.pretrain_path = pretrain_path
+                        self.new_layer_names = []
+                # Example usage:
+                opt = Opt(model_depth=101, input_W=args.roi_x, input_H=args.roi_y, input_D=args.roi_z, resnet_shortcut='A', no_cuda=False, n_seg_classes=args.num_class,pretrain_path=args.pretrain)
+                model,para=generate_model(opt)
             else:
                 print(f"unkown: {args.pretraining_method_name}")
             print(f'Use {args.pretraining_method_name} UNet backbone pretrained weights')

@@ -75,6 +75,9 @@ for arch in unet segresnet; do
     genesis)
         pretrain_path="pretrained_weights/self_supervised_models_genesis_unet_620.pt"
         ;;
+    med3d)
+        pretrain_path="pretrained_weights/supervised_med3D_residual_unet_1623.pth"
+        ;;
     scratch)
         echo "from scratch"
         ;;
