@@ -1,5 +1,5 @@
 <h1 align="center">SuPreM</h1>
-<h3 align="center" style="font-size: 20px; margin-bottom: 4px">For Anatomical Segmentation on the TotalSegmentator</h3>
+<h3 align="center" style="font-size: 20px; margin-bottom: 4px">For Anatomical Segmentation on the ImageCAS</h3>
 <p align="center">
     <a href='https://www.zongweiz.com/dataset'><img src='https://img.shields.io/badge/Project-Page-Green'></a> 
     <a href='https://www.cs.jhu.edu/~alanlab/Pubs23/li2023suprem.pdf'><img src='https://img.shields.io/badge/Paper-PDF-purple'></a> 
@@ -13,7 +13,7 @@
 The results are organized as
 
 ```
-totalsegmentator
+ImageCAS
     ├── checkpoints
     │   └── $logname
     │       ├── best_model.pth
@@ -45,25 +45,25 @@ pip install -r requirements.txt
 ##### 2. Download the pre-trained  checkpoint
 
 ```bash
-cd target_applications/totalsegmentator/pretrained_weights/
+cd target_applications/ImageCAS/pretrained_weights/
 wget https://huggingface.co/MrGiovanni/SuPreM/resolve/main/supervised_suprem_unet_2100.pth
 wget https://huggingface.co/MrGiovanni/SuPreM/resolve/main/supervised_suprem_segresnet_2100.pth
 
 cd ../../../
 ```
 
-##### 3. Download the TotalSegmentator (v2.0.1) dataset
+##### 3. Download the ImageCAS dataset
 
-from [Zenodo](https://doi.org/10.5281/zenodo.6802613) (1,228 subjects) (v2.0.1) and save it to `/path/to/your/data/TotalSegmentator`
+from [Zenodo](https://doi.org/10.5281/zenodo.6802613) (1,228 subjects) (v2.0.1) and save it to `/path/to/your/data/ImageCAS`
 
-##### 4. Fine-tune pretraining methods (U-Net and SegResNet) on TotalSegmentator 
+##### 4. Fine-tune pretraining methods (U-Net and SegResNet) on ImageCAS 
 ```bash
 # Single GPU
 
-cd target_applications/totalsegmentator/
+cd target_applications/ImageCAS/
 RANDOM_PORT=$((RANDOM % 64512 + 1024))
 pretraining_method_name=suprem
-datapath=/path/to/your/data/TotalSegmentator/ # change to /path/to/your/data/TotalSegmentator
+datapath=/path/to/your/data/ImageCAS/ # change to /path/to/your/data/ImageCAS
 target_task=cardiac
 num_target_class=19
 for arch in unet segresnet; do
@@ -115,13 +115,13 @@ done
 ```bash
 # Single GPU
 
-cd target_applications/totalsegmentator/
+cd target_applications/ImageCAS/
 RANDOM_PORT=$((RANDOM % 64512 + 1024))
 pretraining_method_name=suprem
 for arch in unet segresnet; do
 for fold in {1..5}
 do
-datapath=/path/to/your/data/TotalSegmentator/ # change to /path/to/your/data/TotalSegmentator
+datapath=/path/to/your/data/ImageCAS/ # change to /path/to/your/data/ImageCAS
 target_task=cardiac
 num_target_class=19
 checkpoint_path=checkpoints/$pretraining_method_name.$arch.$target_task.fold$fold/best_model.pth
@@ -133,15 +133,15 @@ done
 done
 ```
 
-##### 6. Fine-tune the from-scratch models (U-Net and SegResNet) using TotalSegmentator
+##### 6. Fine-tune the from-scratch models (U-Net and SegResNet) using ImageCAS
 
 ```bash
 # Single GPU
 
-cd target_applications/totalsegmentator/
+cd target_applications/ImageCAS/
 RANDOM_PORT=$((RANDOM % 64512 + 1024))
 pretraining_method_name=scratch
-datapath=/path/to/your/data/TotalSegmentator/ # change to /path/to/your/data/TotalSegmentator
+datapath=/path/to/your/data/ImageCAS/ # change to /path/to/your/data/ImageCAS
 for arch in unet segresnet; do
 target_task=cardiac
 num_target_class=19
@@ -157,13 +157,13 @@ done
 ```bash
 # Single GPU
 
-cd target_applications/totalsegmentator/
+cd target_applications/ImageCAS/
 RANDOM_PORT=$((RANDOM % 64512 + 1024))
 pretraining_method_name=scratch
 for arch in unet segresnet; do
 for fold in {1..5}
 do
-datapath=/path/to/your/data/TotalSegmentator/ # change to /path/to/your/data/TotalSegmentator
+datapath=/path/to/your/data/ImageCAS/ # change to /path/to/your/data/ImageCAS
 target_task=cardiac
 num_target_class=19
 checkpoint_path=checkpoints/$pretraining_method_name.$arch.$target_task.fold$fold/best_model.pth
