@@ -53,133 +53,13 @@ from monai.transforms.io.array import LoadImage, SaveImage
 from monai.utils import GridSamplePadMode, ensure_tuple, ensure_tuple_rep
 from monai.data.image_reader import ImageReader
 from monai.utils.enums import PostFix
-DEFAULT_POST_FIX = PostFix.meta()
+class_map_part_cas={
+    1:"coronary_artery",
+}
 
-class_map_part_cardiac = {
-    1: "heart",
-    2: "aorta",
-    3: "pulmonary_vein",
-    4: "brachiocephalic_trunk",
-    5: "subclavian_artery_right",
-    6: "subclavian_artery_left",
-    7: "common_carotid_artery_right",
-    8: "common_carotid_artery_left",
-    9: "brachiocephalic_vein_left",
-    10: "brachiocephalic_vein_right",
-    11: "atrial_appendage_left",
-    12: "superior_vena_cava",
-    13: "inferior_vena_cava",
-    14: "portal_vein_and_splenic_vein",
-    15: "iliac_artery_left",
-    16: "iliac_artery_right",
-    17: "iliac_vena_left",
-    18: "iliac_vena_right",
-    }
+imagecas_taskmap_set = {
+    "cas":class_map_part_cas,
 
-class_map_part_organs = {
-    1: "spleen",
-    2: "kidney_right",
-    3: "kidney_left",
-    4: "gallbladder",
-    5: "liver",
-    6: "stomach",
-    7: "aorta",
-    8: "inferior_vena_cava",
-    9: "portal_vein_and_splenic_vein",
-    10: "pancreas",
-    11: "adrenal_gland_right",
-    12: "adrenal_gland_left",
-    13: "lung_upper_lobe_left",
-    14: "lung_lower_lobe_left",
-    15: "lung_upper_lobe_right",
-    16: "lung_middle_lobe_right",
-    17: "lung_lower_lobe_right"
-    }
-
-class_map_part_vertebrae = {
-    1: "vertebrae_L5",
-    2: "vertebrae_L4",
-    3: "vertebrae_L3",
-    4: "vertebrae_L2",
-    5: "vertebrae_L1",
-    6: "vertebrae_T12",
-    7: "vertebrae_T11",
-    8: "vertebrae_T10",
-    9: "vertebrae_T9",
-    10: "vertebrae_T8",
-    11: "vertebrae_T7",
-    12: "vertebrae_T6",
-    13: "vertebrae_T5",
-    14: "vertebrae_T4",
-    15: "vertebrae_T3",
-    16: "vertebrae_T2",
-    17: "vertebrae_T1",
-    18: "vertebrae_C7",
-    19: "vertebrae_C6",
-    20: "vertebrae_C5",
-    21: "vertebrae_C4",
-    22: "vertebrae_C3",
-    23: "vertebrae_C2",
-    24: "vertebrae_C1"
-    }
-
-class_map_part_muscles = {
-    1: "humerus_left",
-    2: "humerus_right",
-    3: "scapula_left",
-    4: "scapula_right",
-    5: "clavicula_left",
-    6: "clavicula_right",
-    7: "femur_left",
-    8: "femur_right",
-    9: "hip_left",
-    10: "hip_right",
-    11: "sacrum",
-    12: "gluteus_maximus_left",
-    13: "gluteus_maximus_right",
-    14: "gluteus_medius_left",
-    15: "gluteus_medius_right",
-    16: "gluteus_minimus_left",
-    17: "gluteus_minimus_right",
-    18: "autochthon_left",
-    19: "autochthon_right",
-    20: "iliopsoas_left",
-    21: "iliopsoas_right"
-    }
-
-class_map_part_ribs = {
-    1: 'rib_left_1', 
-    2: 'rib_left_2', 
-    3: 'rib_left_3', 
-    4: 'rib_left_4', 
-    5: 'rib_left_5', 
-    6: 'rib_left_6', 
-    7: 'rib_left_7', 
-    8: 'rib_left_8', 
-    9: 'rib_left_9', 
-    10: 'rib_left_10', 
-    11: 'rib_left_11', 
-    12: 'rib_left_12', 
-    13: 'rib_right_1', 
-    14: 'rib_right_2', 
-    15: 'rib_right_3', 
-    16: 'rib_right_4', 
-    17: 'rib_right_5', 
-    18: 'rib_right_6', 
-    19: 'rib_right_7', 
-    20: 'rib_right_8', 
-    21: 'rib_right_9', 
-    22: 'rib_right_10', 
-    23: 'rib_right_11', 
-    24: 'rib_right_12'
-    }
-
-totalseg_taskmap_set = {
-    'cardiac': class_map_part_cardiac,
-    'organs': class_map_part_organs,
-    'vertebrae': class_map_part_vertebrae,
-    'muscles': class_map_part_muscles,
-    'ribs': class_map_part_ribs,
 }
 
 
@@ -240,7 +120,7 @@ class LoadImaged_totoalseg(MapTransform):
         return d
 
     def label_transfer(self, lbl_dir, map_type, shape):
-        organ_map = totalseg_taskmap_set[map_type]
+        organ_map = imagecas_taskmap_set[map_type]
         organ_lbl = np.zeros(shape)
         for index, organ in organ_map.items():
             array, mata_infomation = self._loader(lbl_dir + organ + '.nii.gz')
@@ -251,7 +131,7 @@ class LoadImaged_totoalseg(MapTransform):
 def get_loader(args):
     train_transforms = Compose(
         [
-            LoadImaged_totoalseg(keys=["image"], map_type=args.map_type), # 'cardiac', 'organs', 'vertebrae', 'muscles', 'ribs'
+            LoadImaged_totoalseg(keys=["image"], map_type=args.map_type), # cas
             AddChanneld(keys=["image", "label"]),
             Orientationd(keys=["image", "label"], axcodes="RAS"),
             Spacingd(

@@ -31,7 +31,7 @@ from monai.networks.nets import SegResNet
 from dataset.dataloader import get_loader
 from utils.utils_test import dice_score, check_data, TEMPLATE, get_key, NUM_CLASS, surface_dice
 from optimizers.lr_scheduler import LinearWarmupCosineAnnealingLR
-from dataset.dataloader import totalseg_taskmap_set, class_map_part_muscles, class_map_part_organs, class_map_part_vertebrae, class_map_part_cardiac
+from dataset.dataloader import imagecas_taskmap_set,
 
 
 torch.multiprocessing.set_sharing_strategy('file_system')
@@ -43,7 +43,7 @@ def validation(model, ValLoader, args):
     model.eval()
     dice_results = []  
     nsd_results = [] 
-    selected_class_map = totalseg_taskmap_set[args.map_type]
+    selected_class_map = imagecas_taskmap_set[args.map_type]
     post_label = AsDiscrete(to_onehot=args.num_class)
     post_pred = AsDiscrete(argmax=True, to_onehot=args.num_class)    
     spacing_dict = {}
