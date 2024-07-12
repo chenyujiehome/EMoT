@@ -64,8 +64,8 @@ cd target_applications/ImageCAS/
 RANDOM_PORT=$((RANDOM % 64512 + 1024))
 pretraining_method_name=suprem
 datapath=/path/to/your/data/ImageCAS/ # change to /path/to/your/data/ImageCAS
-target_task=cardiac
-num_target_class=19
+target_task=cas
+num_target_class=2
 for arch in unet segresnet; do
     if [ "$arch" = "unet" ]; then
     case $pretraining_method_name in 
@@ -122,8 +122,8 @@ for arch in unet segresnet; do
 for fold in {1..5}
 do
 datapath=/path/to/your/data/ImageCAS/ # change to /path/to/your/data/ImageCAS
-target_task=cardiac
-num_target_class=19
+target_task=cas
+num_target_class=2
 checkpoint_path=checkpoints/$pretraining_method_name.$arch.$target_task.fold$fold/best_model.pth
 
 
@@ -143,8 +143,8 @@ RANDOM_PORT=$((RANDOM % 64512 + 1024))
 pretraining_method_name=scratch
 datapath=/path/to/your/data/ImageCAS/ # change to /path/to/your/data/ImageCAS
 for arch in unet segresnet; do
-target_task=cardiac
-num_target_class=19
+target_task=cas
+num_target_class=2
 for fold in {1..5}
 do
 python -W ignore -m torch.distributed.launch --nproc_per_node=1 --master_port=$RANDOM_PORT train.py --dist  --model_backbone $arch --log_name $pretraining_method_name.$arch.$target_task.fold$fold --map_type $target_task --num_class $num_target_class --dataset_path $datapath --num_workers 8 --batch_size 2  --fold $fold --pretraining_method_name $pretraining_method_name
@@ -164,8 +164,8 @@ for arch in unet segresnet; do
 for fold in {1..5}
 do
 datapath=/path/to/your/data/ImageCAS/ # change to /path/to/your/data/ImageCAS
-target_task=cardiac
-num_target_class=19
+target_task=cas
+num_target_class=2
 checkpoint_path=checkpoints/$pretraining_method_name.$arch.$target_task.fold$fold/best_model.pth
 
 

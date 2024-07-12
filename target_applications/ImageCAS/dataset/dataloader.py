@@ -53,6 +53,7 @@ from monai.transforms.io.array import LoadImage, SaveImage
 from monai.utils import GridSamplePadMode, ensure_tuple, ensure_tuple_rep
 from monai.data.image_reader import ImageReader
 from monai.utils.enums import PostFix
+DEFAULT_POST_FIX = PostFix.meta()
 class_map_part_cas={
     1:"coronary_artery",
 }
@@ -63,7 +64,7 @@ imagecas_taskmap_set = {
 }
 
 
-class LoadImaged_totoalseg(MapTransform):
+class LoadImaged_imagecas(MapTransform):
     def __init__(
         self,
         keys: KeysCollection,
@@ -131,7 +132,7 @@ class LoadImaged_totoalseg(MapTransform):
 def get_loader(args):
     train_transforms = Compose(
         [
-            LoadImaged_totoalseg(keys=["image"], map_type=args.map_type), # cas
+            LoadImaged_imagecas(keys=["image"], map_type=args.map_type), # cas
             AddChanneld(keys=["image", "label"]),
             Orientationd(keys=["image", "label"], axcodes="RAS"),
             Spacingd(
@@ -175,7 +176,7 @@ def get_loader(args):
 
     val_transforms = Compose(
         [
-            LoadImaged_totoalseg(keys=["image"], map_type=args.map_type),
+            LoadImaged_imagecas(keys=["image"], map_type=args.map_type),
             AddChanneld(keys=["image", "label"]),
             Orientationd(keys=["image", "label"], axcodes="RAS"),
             Spacingd(
@@ -198,7 +199,7 @@ def get_loader(args):
 
     test_transforms = Compose(
         [
-            LoadImaged_totoalseg(keys=["image"], map_type=args.map_type),
+            LoadImaged_imagecas(keys=["image"], map_type=args.map_type),
             AddChanneld(keys=["image"]),
             Orientationd(keys=["image"], axcodes="RAS"),
             Spacingd(

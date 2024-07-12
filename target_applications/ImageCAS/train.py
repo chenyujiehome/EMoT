@@ -308,7 +308,7 @@ def main():
     parser.add_argument('--roi_z', default=96, type=int, help='roi size in z direction')
     parser.add_argument('--num_samples', default=1, type=int, help='sample number in each ct')
     parser.add_argument('--map_type', default='organs', help='cas') 
-    parser.add_argument('--num_class', default=18, type=int, help='class num: 18 | 22 | 19 | 25 | 25')
+    parser.add_argument('--num_class', default=2, type=int, help='class num: 2')
     parser.add_argument('--overlap', default=0.5, type=float, help='overlap for sliding_window_inference')
     parser.add_argument('--dataset_path', default='...', help='dataset path')
     parser.add_argument('--model_backbone', default='unet', help='model backbone, also avaliable for swinunetr')
