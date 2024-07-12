@@ -1,235 +1,167 @@
-s1366	ct polytrauma
-s0189	ct aortic valve
-s0329	ct abdomen-pelvis
-s0328	ct abdomen-pelvis
-s0321	ct neck-thorax-abdomen-pelvis
-s0295	ct spine
-s0316	ct  intervention 
-s0271	ct angiography thorax
-s0308	ct angiography abdomen-pelvis-leg
-s0287	ct angiography neck-thx-abd-pelvis-leg
-s0288	ct spine
-s0260	ct neck-thorax-abdomen-pelvis
-s0259	ct neck
-s0255	ct abdomen-pelvis
-s0252	ct abdomen-pelvis
-s0221	ct spine
-s0242	ct abdomen-pelvis
-s0230	ct heart-thorakale aorta
-s0234	ct spine
-s0224	ct polytrauma
-s1406	ct gesichtshead
-s0191	ct spine
-s0209	ct spine
-s0201	ct abdomen-pelvis
-s0108	ct neck-thorax-abdomen-pelvis
-s0161	ct abdomen-pelvis
-s0149	ct spine
-s0153	ct abdomen-pelvis
-s0166	ct abdomen-pelvis
-s0160	ct abdomen-pelvis
-s0159	ct  operation
-s0136	ct spine
-s0132	ct abdomen-pelvis
-s0130	ct spine
-s0119	ct abdomen-pelvis
-s0112	ct neck
-s0115	ct angiography thorax
-s0114	ct thorax-neck
-s0110	ct thorax-neck
-s0107	ct abdomen-pelvis
-s0100	ct spine
-s0096	ct angiography abdomen-pelvis-leg
-s0083	ct coronary arteries
-s0078	ct abdomen-pelvis
-s0066	ct abdomen-pelvis
-s0062	ct pelvis
-s0052	ct abdomen-pelvis
-s0044	ct neck
-s0031	ct angiography abdomen-pelvis-leg
-s0024	ct thorax-abdomen
-s0006	ct abdomen-pelvis
-s0046	ct thorax-neck
-s0102	ct thorax-abdomen
-s0657	ct neck-thorax-abdomen-pelvis
-s0753	ct thorax-neck
-s0670	ct neck-thorax-abdomen-pelvis
-s0748	ct angiography head
-s0746	ct abdomen
-s0731	ct thorax-abdomen-pelvis
-s0736	ct angiography neck-thx-abd-pelvis-leg
-s0708	ct neck-thorax-abdomen-pelvis
-s0715	ct  intervention 
-s0707	ct angiography neck-thx-abd-pelvis-leg
-s0684	ct heart
-s1359	ct hip right
-s0474	ct angiography head
-s0667	ct neck-thorax-abdomen-pelvis
-s0681	ct heart-thorakale aorta
-s0673	ct pelvis
-s0661	ct neck-thorax-abdomen-pelvis
-s0656	ct thorax-abdomen-pelvis
-s0617	ct thorax-abdomen-pelvis
-s0682	ct thorax-abdomen
-s0602	ct thorax-abdomen-pelvis
-s0636	ct thorax-abdomen
-s0426	ct pelvis
-s0632	ct thorax-neck
-s0604	ct thorax-neck
-s0552	ct neck
-s0611	ct pelvis
-s0587	ct neck-thorax-abdomen-pelvis
-s0571	ct thorax-abdomen-pelvis
-s0577	ct thorax-abdomen-pelvis
-s0579	ct spine
-s0615	ct thorax-abdomen
-s0749	ct abdomen
-s0564	ct pelvis
-s0583	ct thorax-abdomen
-s0590	ct abdomen
-s0532	ct heart
-s0560	ct abdomen
-s0542	ct thorax-abdomen
-s0527	ct angiography neck
-s0522	ct thorax
-s0548	ct neck-thorax-abdomen-pelvis
-s0510	ct neck-thorax-abdomen-pelvis
-s0658	ct thorax-abdomen
-s1355	ct angiography abdomen-pelvis
-s0513	ct abdomen
-s0483	ct thorax-abdomen-pelvis
-s0463	ct heart-thorakale aorta
-s0477	ct neck-thorax-abdomen-pelvis
-s0482	ct spine
-s0475	ct pelvis
-s0465	ct heart
-s0469	ct thorax-chest
-s0467	ct angiography neck-thx-abd-pelvis-leg
-s0452	ct aortic valve
-s0462	ct spine
-s0471	ct abdomen
-s0459	ct thorax-neck
-s0441	ct abdomen
-s0439	ct heart-thorakale aorta
-s0500	ct neck-thorax-abdomen-pelvis
-s0429	ct thorax-abdomen-pelvis
-s0647	ct abdomen
-s0418	ct pelvis
-s0431	ct angiography neck-thx-abd-pelvis-leg
-s0410	ct angiography head
-s0383	ct thorax-abdomen-pelvis
-s0478	ct angiography head
-s0374	ct heart-thorakale aorta
-s0394	ct thorax-abdomen
-s0392	ct thorax-chest
-s0378	ct thorax-neck
-s0373	ct thorax-neck
-s0368	ct heart
-s0361	ct angiography pelvis-leg
-s0345	ct spine
-s0332	ct thorax-abdomen-pelvis
-s0336	ct angiography neck-thx-abd-pelvis-leg
-s0342	ct abdomen
-s0401	ct thorax-abdomen
-s0518	ct neck
-s0437	ct thorax-abdomen
-s0679	ct abdomen
-s1077	ct angiography neck-thx-abd-pelvis-leg
-s1362	ct angiography thorax-abdomen-pelvis
-s0825	ct heart-thorakale aorta
-s1247	ct neck-thorax-abdomen-pelvis
-s1201	ct angiography thorax
-s1332	ct aortic valve
-s1343	ct thorax-neck
-s1339	ct abdomen
-s1315	ct  intervention 
-s1329	ct thorax-abdomen
-s1301	ct pelvis
-s1331	ct abdomen
-s1296	ct thorax-chest
-s1268	ct thorax-abdomen-pelvis
-s1155	ct thorax-abdomen-pelvis
-s1288	ct chest
-s1289	ct spine
-s1280	ct left artrium
-s1255	ct neck-thorax-abdomen-pelvis
-s1258	ct left artrium
-s1236	ct  intervention 
-s1251	ct angiography pelvis-leg
-s1242	ct neck-thorax-abdomen-pelvis
-s1239	ct left artrium
-s1230	ct aortic valve
-s1224	ct thorax-abdomen-pelvis
-s1221	ct thorax
-s1207	ct thorax-abdomen-pelvis
-s1205	ct abdomen 
-s1190	ct heart-thorakale aorta
-s1162	ct thorax-chest
-s1175	ct  intervention 
-s1174	ct thorax-abdomen-pelvis
-s1157	ct thorax
-s1158	ct thorax-neck
-s1156	ct upper leg left
-s1391	ct angiography abdomen-pelvis
-s1151	ct angiography pelvis-leg
-s1148	ct angiography head
-s1149	ct abdomen 
-s1387	ct angiography thorax-abdomen-pelvis
-s1105	ct aortic valve
-s1124	ct polytrauma
-s1120	ct thorax-abdomen-pelvis
-s1102	ct thorax-chest
-s1060	ct thorax-neck
-s0796	ct neck-thorax-abdomen-pelvis
-s1001	ct neck
-s1419	ct head
-s1070	ct thorax-abdomen-pelvis
-s1069	ct thorax-abdomen-pelvis
-s1062	ct angiography neck-thx-abd-pelvis-leg
-s1067	ct thorax-neck
-s1042	ct thorax
-s1040	ct angiography head
-s1021	ct left artrium
-s1028	ct thorax-chest
-s1023	ct thorax-neck
-s0961	ct thorax-abdomen-pelvis
-s0976	ct thorax-abdomen-pelvis
-s0981	ct pelvis
-s1372	ct angiography thorax-abdomen-pelvis
-s0945	ct thorax-abdomen-pelvis
-s0954	ct heart-thorakale aorta
-s0946	ct heart-thorakale aorta
-s0933	ct polytrauma
-s0916	ct thorax-abdomen-pelvis
-s0931	ct angiography neck-thx-abd-pelvis-leg
-s0924	ct neck-thorax-abdomen-pelvis
-s0911	ct left artrium
-s0771	ct thorax-neck
-s0907	ct pelvis
-s0897	ct thorax-neck
-s0863	ct neck-thorax-abdomen-pelvis
-s0878	ct neck-thorax-abdomen-pelvis
-s0853	ct neck
-s0861	ct  operation
-s0860	ct polytrauma
-s0851	ct thorax-neck
-s0849	ct angiography head
-s0845	ct thorax-neck
-s0836	ct thorax-abdomen-pelvis
-s0767	ct heart
-s0820	ct angiography head
-s0813	ct heart-thorakale aorta
-s0819	ct pelvis
-s0815	ct pelvis
-s0810	ct thorax-neck
-s0795	ct thorax-abdomen-pelvis
-s0806	ct neck-thorax-abdomen-pelvis
-s0804	ct angiography neck-thx-abd-pelvis-leg
-s0797	ct neck-thorax-abdomen-pelvis
-s0787	ct left artrium
-s1420	ct thorax-abdomen-pelvis
-s0766	ct angiography head
-s0759	ct neck-thorax-abdomen-pelvis
-s0754	ct polytrauma
-s1424	ct thorax-abdomen-pelvis
-s1429	nan
+BDMAP_00015159	
+BDMAP_00015298	
+BDMAP_00014774	
+BDMAP_00015274	
+BDMAP_00015537	
+BDMAP_00014957	
+BDMAP_00015009	
+BDMAP_00014873	
+BDMAP_00015539	
+BDMAP_00015562	
+BDMAP_00015208	
+BDMAP_00014648	
+BDMAP_00015458	
+BDMAP_00014708	
+BDMAP_00014927	
+BDMAP_00015391	
+BDMAP_00014856	
+BDMAP_00015354	
+BDMAP_00015597	
+BDMAP_00015454	
+BDMAP_00014822	
+BDMAP_00015616	
+BDMAP_00014875	
+BDMAP_00015197	
+BDMAP_00015221	
+BDMAP_00014885	
+BDMAP_00015359	
+BDMAP_00015531	
+BDMAP_00014959	
+BDMAP_00015067	
+BDMAP_00015579	
+BDMAP_00014948	
+BDMAP_00014748	
+BDMAP_00015627	
+BDMAP_00015001	
+BDMAP_00015315	
+BDMAP_00015483	
+BDMAP_00014775	
+BDMAP_00015580	
+BDMAP_00015046	
+BDMAP_00015195	
+BDMAP_00015372	
+BDMAP_00015542	
+BDMAP_00014869	
+BDMAP_00015601	
+BDMAP_00014830	
+BDMAP_00014747	
+BDMAP_00014924	
+BDMAP_00015157	
+BDMAP_00015554	
+BDMAP_00015103	
+BDMAP_00014904	
+BDMAP_00015269	
+BDMAP_00014756	
+BDMAP_00015538	
+BDMAP_00015161	
+BDMAP_00015241	
+BDMAP_00014719	
+BDMAP_00014849	
+BDMAP_00015087	
+BDMAP_00015588	
+BDMAP_00014645	
+BDMAP_00015416	
+BDMAP_00015587	
+BDMAP_00015214	
+BDMAP_00015232	
+BDMAP_00015219	
+BDMAP_00015366	
+BDMAP_00014717	
+BDMAP_00014786	
+BDMAP_00015415	
+BDMAP_00014954	
+BDMAP_00015115	
+BDMAP_00015042	
+BDMAP_00015577	
+BDMAP_00014912	
+BDMAP_00014707	
+BDMAP_00014929	
+BDMAP_00014938	
+BDMAP_00014782	
+BDMAP_00015061	
+BDMAP_00015490	
+BDMAP_00014807	
+BDMAP_00015343	
+BDMAP_00014823	
+BDMAP_00014694	
+BDMAP_00015635	
+BDMAP_00015256	
+BDMAP_00014976	
+BDMAP_00014689	
+BDMAP_00015320	
+BDMAP_00014656	
+BDMAP_00014923	
+BDMAP_00014861	
+BDMAP_00015271	
+BDMAP_00015311	
+BDMAP_00014727	
+BDMAP_00015571	
+BDMAP_00015231	
+BDMAP_00014732	
+BDMAP_00014649	
+BDMAP_00014738	
+BDMAP_00014816	
+BDMAP_00015520	
+BDMAP_00015318	
+BDMAP_00014815	
+BDMAP_00015322	
+BDMAP_00014660	
+BDMAP_00015471	
+BDMAP_00014841	
+BDMAP_00015268	
+BDMAP_00014922	
+BDMAP_00014874	
+BDMAP_00015125	
+BDMAP_00014942	
+BDMAP_00014979	
+BDMAP_00014787	
+BDMAP_00015424	
+BDMAP_00014958	
+BDMAP_00015175	
+BDMAP_00015258	
+BDMAP_00014676	
+BDMAP_00014925	
+BDMAP_00015207	
+BDMAP_00015295	
+BDMAP_00014828	
+BDMAP_00014795	
+BDMAP_00014863	
+BDMAP_00015075	
+BDMAP_00015479	
+BDMAP_00014832	
+BDMAP_00015492	
+BDMAP_00015606	
+BDMAP_00014790	
+BDMAP_00015057	
+BDMAP_00015418	
+BDMAP_00014691	
+BDMAP_00015583	
+BDMAP_00014845	
+BDMAP_00015384	
+BDMAP_00015529	
+BDMAP_00015248	
+BDMAP_00014935	
+BDMAP_00015052	
+BDMAP_00015358	
+BDMAP_00015491	
+BDMAP_00014835	
+BDMAP_00014821	
+BDMAP_00015473	
+BDMAP_00015408	
+BDMAP_00015444	
+BDMAP_00015024	
+BDMAP_00015457	
+BDMAP_00015134	
+BDMAP_00014870	
+BDMAP_00015423	
+BDMAP_00015347	
+BDMAP_00014985	
+BDMAP_00015566	
+BDMAP_00015441	
+BDMAP_00015215	
+BDMAP_00015178	
+BDMAP_00015371	
+BDMAP_00015212	
+BDMAP_00015328	
+BDMAP_00015098	
+BDMAP_00015486	
