@@ -156,9 +156,9 @@ def process(args):
                         self.no_cuda = no_cuda
                         self.n_seg_classes = n_seg_classes
                         self.pretrain_path = pretrain_path
-                        self.new_layer_names = []
+                        self.new_layer_names = ['conv_seg']
                 # Example usage:
-                opt = Opt(model_depth=101, input_W=args.roi_x, input_H=args.roi_y, input_D=args.roi_z, resnet_shortcut='A', no_cuda=False, n_seg_classes=args.num_class,pretrain_path=args.pretrain)
+                opt = Opt(model_depth=101, input_W=args.roi_x, input_H=args.roi_y, input_D=args.roi_z, resnet_shortcut='B', no_cuda=False, n_seg_classes=args.num_class,pretrain_path=args.pretrain)
                 model,para=generate_model(opt)
             elif args.pretraining_method_name=="dodnet":
                 model = MOTS_model(args, norm_cfg='IN', activation_cfg='relu', num_classes=args.num_classes,
