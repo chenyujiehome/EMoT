@@ -54,7 +54,7 @@ cd ../../../
 
 ##### 3. Download the ImageCAS dataset
 
-from [Zenodo](https://doi.org/10.5281/zenodo.6802613) (1,228 subjects) (v2.0.1) and save it to `/path/to/your/data/ImageCAS`
+Download ImageCAS dataset and save it to `/path/to/your/data/ImageCAS`
 
 ##### 4. Fine-tune pretraining methods (U-Net and SegResNet) on ImageCAS 
 ```bash
