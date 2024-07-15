@@ -48,6 +48,7 @@ pip install -r requirements.txt
 cd target_applications/ImageCAS/pretrained_weights/
 wget https://huggingface.co/MrGiovanni/SuPreM/resolve/main/supervised_suprem_unet_2100.pth
 wget https://huggingface.co/MrGiovanni/SuPreM/resolve/main/supervised_suprem_segresnet_2100.pth
+wget https://huggingface.co/MrGiovanni/SuPreM/resolve/main/self_supervised_models_genesis_unet_620.pt
 
 cd ../../../
 ```
@@ -74,9 +75,6 @@ for arch in unet segresnet; do
         ;;
     genesis)
         pretrain_path="pretrained_weights/self_supervised_models_genesis_unet_620.pt"
-        ;;
-    med3d)
-        pretrain_path="pretrained_weights/supervised_med3D_residual_unet_1623.pth"
         ;;
     scratch)
         echo "from scratch"
