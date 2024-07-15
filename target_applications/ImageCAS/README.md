@@ -24,15 +24,16 @@ ImageCAS
             ├── nsd_validation_results.csv
             └── dice_validation_results.csv
 ```
+##### 0. Replace /path/to/your/data/ImageCAS/ in the code and README with the actual path to the ImageCAS dataset.
 
-##### 0. Create a virtual environment (optional)
+##### 1. Create a virtual environment (optional)
 
 ```bash
 conda create -n suprem python=3.8
 source activate suprem
 ```
 
-##### 1. Clone the GitHub repository
+##### 2. Clone the GitHub repository
 
 ```bash
 git clone https://github.com/chenyujiehome/SuPreM.git
@@ -42,7 +43,7 @@ pip install monai[all]==0.9.0
 pip install -r requirements.txt
 ```
 
-##### 2. Download the pre-trained  checkpoint
+##### 3. Download the pre-trained  checkpoint
 
 ```bash
 cd target_applications/ImageCAS/pretrained_weights/
@@ -53,11 +54,11 @@ wget https://huggingface.co/MrGiovanni/SuPreM/resolve/main/self_supervised_model
 cd ../../../
 ```
 
-##### 3. Download the ImageCAS dataset
+##### 4. Download the ImageCAS dataset
 
 Download ImageCAS dataset and save it to `/path/to/your/data/ImageCAS`
 
-##### 4. Fine-tune pretraining methods (U-Net and SegResNet) on ImageCAS 
+##### 5. Fine-tune pretraining methods (U-Net and SegResNet) on ImageCAS 
 ```bash
 # Single GPU
 
@@ -108,7 +109,7 @@ for arch in unet segresnet; do
 done
 ```
 
-##### 5. Evaluate the performance per class of pretraining methods
+##### 6. Evaluate the performance per class of pretraining methods
 
 ```bash
 # Single GPU
@@ -131,7 +132,7 @@ done
 done
 ```
 
-##### 6. Fine-tune the from-scratch models (U-Net and SegResNet) using ImageCAS
+##### 7. Fine-tune the from-scratch models (U-Net and SegResNet) using ImageCAS
 
 ```bash
 # Single GPU
@@ -150,7 +151,7 @@ done
 done
 ```
 
-##### 7. Evaluate the per-class performance of the model trained from scratch
+##### 8. Evaluate the per-class performance of the model trained from scratch
 
 ```bash
 # Single GPU
