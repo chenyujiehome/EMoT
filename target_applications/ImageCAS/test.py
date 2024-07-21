@@ -233,7 +233,7 @@ def main():
     ## for distributed training
     parser.add_argument('--dist', dest='dist', action="store_true", default=False,
                         help='distributed training or not')
-    parser.add_argument("--local_rank", type=int)
+    parser.add_argument("--local-rank", type=int)
     parser.add_argument("--device")
     parser.add_argument("--epoch", default=0)
     ## logging
