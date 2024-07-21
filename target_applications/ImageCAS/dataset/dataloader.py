@@ -272,7 +272,7 @@ def get_loader(args):
     print('test len {}'.format(len(data_dicts_test)))
 
     train_dataset = Dataset(data=data_dicts_train, transform=train_transforms)
-    train_sampler = DistributedSampler(dataset=train_dataset, even_divisible=True, shuffle=True) if args.dist else None
+    train_sampler = DistributedSampler(dataset=train_dataset, even_divisible=True, shuffle=True) 
     train_loader = DataLoader(train_dataset, batch_size=args.batch_size, shuffle=(train_sampler is None), num_workers=args.num_workers, 
                                 collate_fn=list_data_collate, sampler=train_sampler)
     

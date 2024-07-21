@@ -85,9 +85,8 @@ def validation(model, ValLoader, args):
 def process(args):
     rank = 0
 
-    if args.dist:
-        dist.init_process_group(backend="nccl", init_method="env://")
-        rank = args.local_rank
+    dist.init_process_group(backend="nccl", init_method="env://")
+    rank = dist.get_rank()% torch.cuda.device_count()
     args.device = torch.device(f"cuda:{rank}")
     torch.cuda.set_device(args.device)
 
@@ -196,23 +195,15 @@ def process(args):
             
     model.to(args.device)
     model.train()
-    
-    if args.dist:
-        model = DistributedDataParallel(model, device_ids=[args.device])
+
+    model = DistributedDataParallel(model, device_ids=[args.device])
     optimizer = torch.optim.AdamW(model.parameters(), lr=args.lr, weight_decay=args.weight_decay)
     
     scheduler = LinearWarmupCosineAnnealingLR(optimizer, warmup_epochs=args.warmup_epoch, max_epochs=args.max_epoch)
 
     if args.resume:
         checkpoint = torch.load(args.resume)
-        if args.dist:
-            model.load_state_dict(checkpoint['net'])
-        else:
-            store_dict = model.state_dict()
-            model_dict = checkpoint['net']
-            for key in model_dict.keys():
-                store_dict['.'.join(key.split('.'))] = model_dict[key]
-            model.load_state_dict(store_dict)
+        model.load_state_dict(checkpoint['net'])
         optimizer.load_state_dict(checkpoint['optimizer'])
         args.epoch = checkpoint['epoch']
         scheduler.load_state_dict(checkpoint['scheduler'])
@@ -231,9 +222,8 @@ def process(args):
         print('Writing Tensorboard logs to ', os.path.join('out',args.log_name))
 
     while args.epoch < args.max_epoch:
-        if args.dist:
-            dist.barrier()
-            train_sampler.set_epoch(args.epoch)
+        dist.barrier()
+        train_sampler.set_epoch(args.epoch)
         scheduler.step()
         loss = train(args, train_loader, model, optimizer)
         if rank == 0:
@@ -272,8 +262,6 @@ def process(args):
 
 def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument('--dist', dest='dist', action="store_true", default=False,
-                        help='distributed training or not')
     parser.add_argument("--local-rank", type=int)
     parser.add_argument("--device")
     parser.add_argument("--epoch", default=0)

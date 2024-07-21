@@ -45,6 +45,6 @@ for arch in unet; do
 
     for fold in 1; do
         RANDOM_PORT=$((RANDOM % 64512 + 1024))
-        python -W ignore -m torch.distributed.launch --nproc_per_node=1 --master_port=$RANDOM_PORT train.py --dist  --model_backbone $arch --log_name $pretraining_method_name.$arch.$target_task.fold$fold --map_type $target_task --num_class $num_target_class --dataset_path $datapath --num_workers 8 --batch_size 2 --pretrain $pretrain_path --fold $fold --pretraining_method_name $pretraining_method_name
+        python -W ignore -m torch.distributed.launch --nproc_per_node=1 --master_port=$RANDOM_PORT train.py   --model_backbone $arch --log_name $pretraining_method_name.$arch.$target_task.fold$fold --map_type $target_task --num_class $num_target_class --dataset_path $datapath --num_workers 8 --batch_size 2 --pretrain $pretrain_path --fold $fold --pretraining_method_name $pretraining_method_name
     done
 done
