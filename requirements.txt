@@ -2,10 +2,10 @@ monai==0.9
 torch==2.3.1
 torchaudio==2.3.1 
 torchvision==0.18.1
-connected-components-3d
+connected-components-3d==3.17.0
 tqdm
 fastremap
-simpleitk
+simpleitk==2.3.1
 ipdb
 matplotlib
 tensorboardX
@@ -13,7 +13,7 @@ ml-collections
 einops
 timm
 elasticdeform
-numpy
+numpy==1.25.2
 nibabel
 scipy
 pandas
