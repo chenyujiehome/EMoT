@@ -38,7 +38,6 @@ source activate suprem
 ```bash
 git clone https://github.com/chenyujiehome/SuPreM.git
 cd SuPreM/
-pip install monai[all]==0.9.0
 pip install -r requirements.txt
 ```
 
