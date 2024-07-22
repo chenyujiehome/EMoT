@@ -49,6 +49,7 @@ cd target_applications/ImageCAS/pretrained_weights/
 wget https://huggingface.co/MrGiovanni/SuPreM/resolve/main/supervised_suprem_unet_2100.pth
 wget https://huggingface.co/MrGiovanni/SuPreM/resolve/main/supervised_suprem_segresnet_2100.pth
 wget https://huggingface.co/MrGiovanni/SuPreM/resolve/main/self_supervised_models_genesis_unet_620.pt
+wget https://huggingface.co/jethro682/pretrain_mri/resolve/main/SMIT_AbdomenAtlas_AI.pth
 
 cd ../../../
 ```
@@ -68,7 +69,16 @@ datapath=/path/to/your/data/ImageCAS/ # change to /path/to/your/data/ImageCAS
 target_task=cas
 num_target_class=2
 for arch in unet segresnet; do
-    if [ "$arch" = "unet" ]; then
+if [ "$arch" = "swintransformer" ]; then
+    case $pretraining_method_name in
+    smit)
+        pretrain_path="pretrained_weights/SMIT_AbdomenAtlas_AI.pth"
+        ;;
+    *)
+        echo "unkown: $pretraining_method_name"
+        ;;
+    esac
+    elif [ "$arch" = "unet" ]; then
     case $pretraining_method_name in 
     suprem)
         pretrain_path="pretrained_weights/supervised_suprem_unet_2100.pth"
@@ -116,16 +126,13 @@ done
 cd target_applications/ImageCAS/
 RANDOM_PORT=$((RANDOM % 64512 + 1024))
 pretraining_method_name=suprem
+datapath=/path/to/your/data/ImageCAS/ # change to /path/to/your/data/ImageCAS
 for arch in unet segresnet; do
 for fold in {1..5}
 do
-datapath=/path/to/your/data/ImageCAS/ # change to /path/to/your/data/ImageCAS
 target_task=cas
 num_target_class=2
 checkpoint_path=checkpoints/$pretraining_method_name.$arch.$target_task.fold$fold/best_model.pth
-
-
-
 python -W ignore -m torch.distributed.launch --nproc_per_node=1 --master_port=$RANDOM_PORT test.py   --model_backbone $arch --log_name $pretraining_method_name.$arch.$target_task.fold$fold --map_type $target_task --num_class $num_target_class --dataset_path $datapath --num_workers 8 --batch_size 2 --pretrain $checkpoint_path  --fold $fold --pretraining_method_name $pretraining_method_name
 done
 done

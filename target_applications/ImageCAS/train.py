@@ -286,8 +286,6 @@ def main():
     parser.add_argument('--lr', default=1e-4, type=float, help='Learning rate')
     parser.add_argument('--weight_decay', default=1e-5, help='Weight Decay')
 
-    parser.add_argument('--dataset_list', nargs='+', default=['total_set'])
-
     parser.add_argument('--data_txt_path', default='./dataset/dataset_list/', help='data txt path')
 
     parser.add_argument('--batch_size', default=1, type=int, help='batch size')
@@ -303,8 +301,8 @@ def main():
     parser.add_argument('--roi_y', default=96, type=int, help='roi size in y direction')
     parser.add_argument('--roi_z', default=96, type=int, help='roi size in z direction')
     parser.add_argument('--num_samples', default=1, type=int, help='sample number in each ct')
-    parser.add_argument('--map_type', default='cas', help='cas') 
-    parser.add_argument('--num_class', default=2, type=int, help='class num: 2')
+    parser.add_argument('--map_type', default='cas', help='depend on your target task') 
+    parser.add_argument('--num_class', default=2, type=int, help='count of target task class + 1(background) ')
     parser.add_argument('--overlap', default=0.5, type=float, help='overlap for sliding_window_inference')
     parser.add_argument('--dataset_path', default='...', help='dataset path')
     parser.add_argument('--model_backbone', default='unet', help='model backbone:unet|swintransformer|segresnet|swinunetr')

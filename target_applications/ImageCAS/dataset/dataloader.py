@@ -225,15 +225,14 @@ def get_loader(args):
     train_lbl = []
     train_name = []
 
-    for item in args.dataset_list:
-        train_txt_path = os.path.join(args.data_txt_path, 'train_' + str(args.fold) + '.txt')
-        for line in open(train_txt_path):
-            name = line.strip().split('\t')[0]
-            train_img_path = os.path.join(args.dataset_path, name, 'ct.nii.gz')
-            train_lbl_path = os.path.join(args.dataset_path, name, 'segmentations/')
-            train_img.append(train_img_path)
-            train_lbl.append(train_lbl_path)
-            train_name.append(name)
+    train_txt_path = os.path.join(args.data_txt_path, 'train_' + str(args.fold) + '.txt')
+    for line in open(train_txt_path):
+        name = line.strip().split('\t')[0]
+        train_img_path = os.path.join(args.dataset_path, name, 'ct.nii.gz')
+        train_lbl_path = os.path.join(args.dataset_path, name, 'segmentations/')
+        train_img.append(train_img_path)
+        train_lbl.append(train_lbl_path)
+        train_name.append(name)
     data_dicts_train = [{'image': image, 'label': label, 'name': name}
                 for image, label, name in zip(train_img, train_lbl, train_name)]
     print('train len {}'.format(len(data_dicts_train)))
@@ -241,15 +240,14 @@ def get_loader(args):
     val_img = []
     val_lbl = []
     val_name = []
-    for item in args.dataset_list:
-        val_txt_path = os.path.join(args.data_txt_path, 'val.txt')
-        for line in open(val_txt_path):
-            name = line.strip().split('\t')[0]
-            val_img_path = os.path.join(args.dataset_path, name, 'ct.nii.gz')
-            val_lbl_path = os.path.join(args.dataset_path, name, 'segmentations/')
-            val_img.append(val_img_path)
-            val_lbl.append(val_lbl_path)
-            val_name.append(name)
+    val_txt_path = os.path.join(args.data_txt_path, 'val.txt')
+    for line in open(val_txt_path):
+        name = line.strip().split('\t')[0]
+        val_img_path = os.path.join(args.dataset_path, name, 'ct.nii.gz')
+        val_lbl_path = os.path.join(args.dataset_path, name, 'segmentations/')
+        val_img.append(val_img_path)
+        val_lbl.append(val_lbl_path)
+        val_name.append(name)
     data_dicts_val = [{'image': image, 'label': label, 'name': name}
                 for image, label, name in zip(val_img, val_lbl, val_name)]
     print('val len {}'.format(len(data_dicts_val)))
@@ -258,15 +256,14 @@ def get_loader(args):
     test_img = []
     test_lbl = []
     test_name = []
-    for item in args.dataset_list:
-        test_txt_path = os.path.join(args.data_txt_path, f'test_{str(args.fold)}.txt')
-        for line in open(test_txt_path):
-            name = line.strip().split('\t')[0]
-            test_img_path = os.path.join(args.dataset_path, name, 'ct.nii.gz')
-            test_lbl_path = os.path.join(args.dataset_path, name, 'segmentations/')
-            test_img.append(test_img_path)
-            test_lbl.append(test_lbl_path)
-            test_name.append(name)
+    test_txt_path = os.path.join(args.data_txt_path, f'test_{str(args.fold)}.txt')
+    for line in open(test_txt_path):
+        name = line.strip().split('\t')[0]
+        test_img_path = os.path.join(args.dataset_path, name, 'ct.nii.gz')
+        test_lbl_path = os.path.join(args.dataset_path, name, 'segmentations/')
+        test_img.append(test_img_path)
+        test_lbl.append(test_lbl_path)
+        test_name.append(name)
     data_dicts_test = [{'image': image, 'label': label, 'name': name}
                 for image, label, name in zip(test_img, test_lbl, test_name)]
     print('test len {}'.format(len(data_dicts_test)))
