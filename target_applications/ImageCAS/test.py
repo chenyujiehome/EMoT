@@ -249,8 +249,8 @@ def main():
     # default =2
     parser.add_argument('--batch_size', default= 2,  type=int, help='batch size')
     parser.add_argument('--num_workers', default=8, type=int, help='workers numebr for DataLoader')
-    parser.add_argument('--a_min', default=-250, type=float, help='a_min in ScaleIntensityRanged')
-    parser.add_argument('--a_max', default=250, type=float, help='a_max in ScaleIntensityRanged')
+    parser.add_argument('--a_min', default=-999, type=float, help='a_min in ScaleIntensityRanged')
+    parser.add_argument('--a_max', default=610, type=float, help='a_max in ScaleIntensityRanged')
     parser.add_argument('--b_min', default=0.0, type=float, help='b_min in ScaleIntensityRanged')
     parser.add_argument('--b_max', default=1.0, type=float, help='b_max in ScaleIntensityRanged')
     parser.add_argument('--space_x', default=1.5, type=float, help='spacing in x direction')

@@ -153,7 +153,7 @@ def get_loader(args):
             RandCropByPosNegLabeld(
                 keys=["image", "label"],\
                 label_key="label",
-                spatial_size=(args.roi_x, args.roi_y, args.roi_z), #192, 192, 64
+                spatial_size=(args.roi_x, args.roi_y, args.roi_z), 
                 pos=2,
                 neg=1,
                 num_samples=args.num_samples,
