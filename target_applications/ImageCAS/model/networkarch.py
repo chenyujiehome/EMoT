@@ -712,6 +712,7 @@ class SMIT_3D_Seg(nn.Module):
         config,
         pretrain:str,
         out_channels: int ,
+        pretrain_key:str = 'student',
         feature_size: int = 48,
         hidden_size: int = 768,
         mlp_dim: int = 3072,
@@ -727,6 +728,7 @@ class SMIT_3D_Seg(nn.Module):
     ) -> None:
        
         super().__init__()
+        self.pretrain_key=pretrain_key
         self.pretrain=pretrain
         self.hidden_size = hidden_size
         img_size = config.img_size[0]
@@ -860,7 +862,7 @@ class SMIT_3D_Seg(nn.Module):
         
     def initialize_weights(self):
         model_dict = torch.load(self.pretrain, map_location='cpu')
-        pretrained_dict = model_dict['student']
+        pretrained_dict = model_dict[self.pretrain_key]
 
         for key in list(pretrained_dict.keys()):
             pretrained_dict[key.replace('module.backbone.transformer.', '')] = pretrained_dict.pop(key)

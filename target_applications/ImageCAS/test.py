@@ -25,6 +25,7 @@ from monai.data import load_decathlon_datalist, decollate_batch, DistributedSamp
 from monai.transforms import AsDiscrete
 from monai.metrics import DiceMetric
 
+from model import configs, networkarch
 from model.SwinUNETR import SwinUNETR
 from model.unet3d import UNet3D
 from monai.networks.nets import SegResNet
@@ -130,6 +131,12 @@ def process(args):
     torch.cuda.set_device(args.device)
 
     # prepare the 3D model
+    if args.model_backbone == 'swintransformer' and args.pretraining_method_name=="smit":
+        config = configs.get_SMIT_small_128_bias_True()
+        model = networkarch.SMIT_3D_Seg(config,
+                                        out_channels=args.num_class,pretrain=args.pretrain,pretrain_key="net")
+        args.roi_x,args.roi_y,args.roi_z=128,128,128
+        print(f'Use {args.pretraining_method_name} swintransformer backbone pretrained weights')
     if args.model_backbone == 'segresnet':
         model = SegResNet(
                     blocks_down=[1, 2, 2, 4],

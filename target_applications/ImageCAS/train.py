@@ -8,7 +8,7 @@ import os
 import argparse
 import time
 from collections import OrderedDict
-from model import configs, networkarch
+
 import warnings
 warnings.filterwarnings("ignore")
 
@@ -22,6 +22,7 @@ from monai.data import load_decathlon_datalist, decollate_batch, DistributedSamp
 from monai.transforms import AsDiscrete
 from monai.metrics import DiceMetric
 
+from model import configs, networkarch
 from model.SwinUNETR import SwinUNETR
 from model.unet3d import UNet3D
 from monai.networks.nets import SegResNet
