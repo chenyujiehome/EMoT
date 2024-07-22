@@ -1,3 +1,4 @@
+monai==0.9
 torch==2.3.1
 torchaudio==2.3.1 
 torchvision==0.18.1
@@ -18,3 +19,5 @@ scipy
 pandas
 glob2
 opencv-python
+h5py==3.11.0
+jupyterlab==4.2.4
