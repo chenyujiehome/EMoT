@@ -8,7 +8,7 @@ import os
 import argparse
 import time
 from collections import OrderedDict
-
+from model import configs, networkarch
 import warnings
 warnings.filterwarnings("ignore")
 
@@ -89,7 +89,13 @@ def process(args):
     rank = dist.get_rank()% torch.cuda.device_count()
     args.device = torch.device(f"cuda:{rank}")
     torch.cuda.set_device(args.device)
-
+    # SuPreM swinunetr backbone
+    if args.model_backbone == 'swintransformer' and args.pretraining_method_name=="smit":
+        config = configs.get_SMIT_small_128_bias_True()
+        model = networkarch.SMIT_3D_Seg(config,
+                                        out_channels=args.num_class,pretrain=args.pretrain)
+        args.roi_x,args.roi_y,args.roi_z=128,128,128
+        print(f'Use {args.pretraining_method_name} swintransformer backbone pretrained weights')
     # SuPreM swinunetr backbone
     if args.model_backbone == 'swinunetr':
         model = SwinUNETR(img_size=(args.roi_x, args.roi_y, args.roi_z),
@@ -215,9 +221,10 @@ def process(args):
     train_loader, train_sampler, val_loader, test_loader = get_loader(args)
 
     best_dice = 0
-    if not os.path.isdir('checkpoints'):
-        os.mkdir('checkpoints')
+
     if rank == 0:
+        if not os.path.isdir('checkpoints'):
+            os.mkdir('checkpoints')
         writer = SummaryWriter(log_dir=os.path.join('out',args.log_name))
         print('Writing Tensorboard logs to ', os.path.join('out',args.log_name))
 
@@ -295,11 +302,11 @@ def main():
     parser.add_argument('--roi_y', default=96, type=int, help='roi size in y direction')
     parser.add_argument('--roi_z', default=96, type=int, help='roi size in z direction')
     parser.add_argument('--num_samples', default=1, type=int, help='sample number in each ct')
-    parser.add_argument('--map_type', default='organs', help='cas') 
+    parser.add_argument('--map_type', default='cas', help='cas') 
     parser.add_argument('--num_class', default=2, type=int, help='class num: 2')
     parser.add_argument('--overlap', default=0.5, type=float, help='overlap for sliding_window_inference')
     parser.add_argument('--dataset_path', default='...', help='dataset path')
-    parser.add_argument('--model_backbone', default='unet', help='model backbone, also avaliable for swinunetr')
+    parser.add_argument('--model_backbone', default='unet', help='model backbone:unet|swintransformer|segresnet|swinunetr')
     parser.add_argument('--fold', default=1, type=int, help='data fold')
 
     args = parser.parse_args()
