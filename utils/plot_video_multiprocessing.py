@@ -1,5 +1,5 @@
 '''
-python -W ignore plot_video_multiprocessing.py --abdomen_atlas /Users/zongwei.zhou/Dropbox\ \(ASU\)/PublicResource/SuPreM/AbdomenAtlas/AbdomenAtlas1.0 --png_save_path /Users/zongwei.zhou/Desktop/AbdomenAtlas1.0PNG --video_save_path /Users/zongwei.zhou/Desktop/AbdomenAtlas1.0AVI --gif_save_path /Users/zongwei.zhou/Desktop/AbdomenAtlas1.0GIF
+python -W ignore plot_video_multiprocessing.py --abdomen_atlas /Users/zongwei.zhou/Dropbox\ \(ASU\)/PublicResource/EMoT/AbdomenAtlas/AbdomenAtlas1.0 --png_save_path /Users/zongwei.zhou/Desktop/AbdomenAtlas1.0PNG --video_save_path /Users/zongwei.zhou/Desktop/AbdomenAtlas1.0AVI --gif_save_path /Users/zongwei.zhou/Desktop/AbdomenAtlas1.0GIF
 '''
 
 import numpy as np 

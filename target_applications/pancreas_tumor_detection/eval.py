@@ -1,5 +1,5 @@
 '''
-python eval.py --predpath /data/zzhou82/code/SuPreM/target_applications/jhh_combined_label/inference_results --truthpath /data/zzhou82/data/JHH_ROI_0.5mm
+python eval.py --predpath /data/zzhou82/code/EMoT/target_applications/jhh_combined_label/inference_results --truthpath /data/zzhou82/data/JHH_ROI_0.5mm
 background  0
 pancreas    1
 pdac        3

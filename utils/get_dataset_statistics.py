@@ -1,5 +1,5 @@
 '''bash
-python get_dataset_statistics.py --datapath /Users/zongwei.zhou/Dropbox\ \(ASU\)/PublicResource/SuPreM/AbdomenAtlas/AbdomenAtlasDemo
+python get_dataset_statistics.py --datapath /Users/zongwei.zhou/Dropbox\ \(ASU\)/PublicResource/EMoT/AbdomenAtlas/AbdomenAtlasDemo
 '''
 
 import os

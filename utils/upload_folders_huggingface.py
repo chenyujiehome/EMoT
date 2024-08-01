@@ -11,7 +11,7 @@ from pathlib import Path
 from huggingface_hub import HfApi, CommitOperationAdd
 
 # Base folder path on your computer
-base_folder = Path("/data2/wenxuan/Project/BagofTricks/SuPreM/direct_inference/AbdomenAtlasDemo") # /path/to/the/folder
+base_folder = Path("/data2/wenxuan/Project/BagofTricks/EMoT/direct_inference/AbdomenAtlasDemo") # /path/to/the/folder
 repository = "wenxuanchelsea/testAbdomenAtlas"  # Hugging face repository
 repository_type = "dataset"  # can be dataset, model, or space
 n = 1000  # number of files per commit

@@ -1,6 +1,6 @@
 # Single GPU
 
-cd /home/chen/SuPreM/target_applications/ImageCAS
+cd /home/chen/EMoT/target_applications/ImageCAS
 RANDOM_PORT=$((RANDOM % 64512 + 1024))
 pretraining_method_name=med3d
 datapath=/home/chen/ImageCAS/ # change to /path/to/your/data/ImageCAS
