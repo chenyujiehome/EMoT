@@ -29,15 +29,15 @@ ImageCAS
 ##### 1. Create a virtual environment (optional)
 
 ```bash
-conda create -n suprem python=3.10
-source activate suprem
+conda create -n emot python=3.10
+source activate emot
 ```
 
 ##### 2. Clone the GitHub repository
 
 ```bash
-git clone https://github.com/chenyujiehome/SuPreM.git
-cd SuPreM/
+git clone https://github.com/chenyujiehome/EMoT.git
+cd EMoT/
 pip install -r requirements.txt
 ```
 
